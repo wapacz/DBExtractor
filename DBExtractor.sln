@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBExtractor", "DBExtractor\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBExtractorService", "DBExtractorService\DBExtractorService.csproj", "{59CF8ABE-0C27-4EA0-98E5-5A1DA85E6E71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBExtractorSandbox", "DBExtractorSandbox\DBExtractorSandbox.csproj", "{6EDAA2E3-89B6-4F84-B0B5-01C4E0EA7FD9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -19,6 +21,10 @@ Global
 		{59CF8ABE-0C27-4EA0-98E5-5A1DA85E6E71}.Debug|x86.Build.0 = Debug|x86
 		{59CF8ABE-0C27-4EA0-98E5-5A1DA85E6E71}.Release|x86.ActiveCfg = Release|x86
 		{59CF8ABE-0C27-4EA0-98E5-5A1DA85E6E71}.Release|x86.Build.0 = Release|x86
+		{6EDAA2E3-89B6-4F84-B0B5-01C4E0EA7FD9}.Debug|x86.ActiveCfg = Debug|x86
+		{6EDAA2E3-89B6-4F84-B0B5-01C4E0EA7FD9}.Debug|x86.Build.0 = Debug|x86
+		{6EDAA2E3-89B6-4F84-B0B5-01C4E0EA7FD9}.Release|x86.ActiveCfg = Release|x86
+		{6EDAA2E3-89B6-4F84-B0B5-01C4E0EA7FD9}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

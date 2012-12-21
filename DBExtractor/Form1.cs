@@ -35,12 +35,16 @@ namespace DBExtractor
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            label1.Text = "Checking...";
-            ServiceHelper sh = new ServiceHelper("DBExctractor");
-            if (sh.IsFound)
+            try
+            {
+                label1.Text = "Checking...";
+                ServiceHelper sh = new ServiceHelper("AFBAgent");
                 label1.Text = "Service found";
-            else
+            }
+            catch(ServiceNotFoundException) 
+            {
                 label1.Text = "Service not found";
+            }
         }
     }
 }
