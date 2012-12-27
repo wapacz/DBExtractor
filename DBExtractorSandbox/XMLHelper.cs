@@ -233,5 +233,126 @@ namespace DBExtractor
                 writer.WriteEndDocument();
             }
         }
+
+        public void GenerateXML_3()
+        {
+            PREFIX = null;
+            NS = null;
+
+            XmlWriterSettings xmlWS = new XmlWriterSettings();
+            xmlWS.Encoding = Encoding.UTF8;
+
+            using (XmlWriter writer = XmlWriter.Create("Kartoteki-3.xml", xmlWS))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement(PREFIX, "Table", NS);
+
+                foreach (string[] row in ar_data)
+                {
+                    writer.WriteStartElement(PREFIX, "Row", NS);
+
+                    for (int i = 0; i < ar_dataType.Length; i++)
+                    {
+                        writer.WriteStartElement(PREFIX, "Cell", NS);
+                        writer.WriteAttributeString(PREFIX, "Name", NS, ar_header[i]);
+                        writer.WriteAttributeString(PREFIX, "Type", NS, ar_dataType[i]);
+                        writer.WriteString(row[i]);
+                        writer.WriteEndElement(); // Data
+                    }
+
+                    writer.WriteEndElement(); // Row
+                }
+
+                writer.WriteEndElement(); // Table
+                writer.WriteEndDocument();
+            }
+        }
+
+        public void GenerateXML_4()
+        {
+            PREFIX = null;
+            NS = null;
+
+            XmlWriterSettings xmlWS = new XmlWriterSettings();
+            xmlWS.Encoding = Encoding.UTF8;
+
+            using (XmlWriter writer = XmlWriter.Create("Kartoteki-4.xml", xmlWS))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement(PREFIX, "Table", NS);
+
+                writer.WriteStartElement(PREFIX, "Header", NS);
+                foreach (string header in ar_header)
+                {
+                    writer.WriteStartElement(PREFIX, "Cell", NS);
+                    writer.WriteAttributeString(PREFIX, "Type", NS, "String");
+                    writer.WriteString(header); 
+                    writer.WriteEndElement(); // Cell
+
+                }
+                writer.WriteEndElement(); // Row
+
+                foreach (string[] row in ar_data)
+                {
+                    writer.WriteStartElement(PREFIX, "Row", NS);
+
+                    for (int i = 0; i < ar_dataType.Length; i++)
+                    {
+                        writer.WriteStartElement(PREFIX, "Cell", NS);
+                        writer.WriteAttributeString(PREFIX, "Type", NS, ar_dataType[i]);
+                        writer.WriteString(row[i]);
+                        writer.WriteEndElement(); // Data
+                    }
+
+                    writer.WriteEndElement(); // Row
+                }
+
+                writer.WriteEndElement(); // Table
+                writer.WriteEndDocument();
+            }
+        }
+
+        public void GenerateXML_5()
+        {
+            PREFIX = null;
+            NS = null;
+
+            XmlWriterSettings xmlWS = new XmlWriterSettings();
+            xmlWS.Encoding = Encoding.UTF8;
+
+            using (XmlWriter writer = XmlWriter.Create("Kartoteki-5.xml", xmlWS))
+            {
+                writer.WriteStartDocument();
+                writer.WriteStartElement(PREFIX, "Table", NS);
+
+                writer.WriteStartElement(PREFIX, "Header", NS);
+                for (int i = 0; i < ar_dataType.Length; i++)
+                {
+                    writer.WriteStartElement(PREFIX, "Cell", NS);
+                    writer.WriteAttributeString(PREFIX, "DataType", NS, ar_dataType[i]);
+                    writer.WriteString(ar_header[i]);
+                    writer.WriteEndElement(); // Cell
+
+                }
+                writer.WriteEndElement(); // Row
+
+                foreach (string[] row in ar_data)
+                {
+                    writer.WriteStartElement(PREFIX, "Row", NS);
+
+                    for (int i = 0; i < ar_dataType.Length; i++)
+                    {
+                        writer.WriteStartElement(PREFIX, "Cell", NS);
+                        writer.WriteString(row[i]);
+                        writer.WriteEndElement(); // Data
+                    }
+
+                    writer.WriteEndElement(); // Row
+                }
+
+                writer.WriteEndElement(); // Table
+                writer.WriteEndDocument();
+            }
+        }
     }
 }

@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.ServiceProcess;
+using System.Threading;
 
 namespace DBExtractor
 {
     public class DBExtractorService : ServiceBase
     {
         public const string MyServiceName = "DBExtractorService";
+
+        private Thread serviceThread;
+        private TimeSpan delay;
 
         public DBExtractorService()
         {
@@ -17,7 +21,9 @@ namespace DBExtractor
 
         private void InitializeComponent()
         {
-            this.ServiceName = MyServiceName;
+            this.ServiceName = DBExtractorService.MyServiceName;
+            this.serviceThread = new Thread(new ThreadStart(ServiceMain));
+            this.delay = new TimeSpan(0, 0, 1, 0, 0); // one minute
         }
 
         /// <summary>
@@ -34,7 +40,8 @@ namespace DBExtractor
         /// </summary>
         protected override void OnStart(string[] args)
         {
-            // TODO: Add start code here (if required) to start your service.
+            this.serviceThread.Start();
+            base.OnStart(args);
         }
 
         /// <summary>
@@ -42,7 +49,18 @@ namespace DBExtractor
         /// </summary>
         protected override void OnStop()
         {
-            // TODO: Add tear-down code here (if required) to stop your service.
+            this.Stop();
+            base.OnStop();
+        }
+
+        protected void ServiceMain()
+        {
+            while (true)
+            {
+                //TODO: get the data from base, convert to XML and send to FTP
+
+                Thread.Sleep(this.delay);
+            }
         }
     }
 }

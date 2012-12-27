@@ -24,7 +24,7 @@ namespace DBExtractor
                 {
                     //NotificationIcon notificationIcon = new NotificationIcon();
                     //notificationIcon.notifyIcon.Visible = true;
-                    Application.Run(new Form1());
+                    Application.Run(new FormMain());
                     //notificationIcon.notifyIcon.Dispose();
                 }
                 else
