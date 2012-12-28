@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Data.SqlClient;
 using System.Data.Sql;
+using System.Data;
 
 namespace DBExtractorSandbox
 {
@@ -66,12 +67,11 @@ namespace DBExtractorSandbox
             */
 
             // Retrieve the enumerator instance and then the data.
-            SqlDataSourceEnumerator instance =
-              SqlDataSourceEnumerator.Instance;
+            SqlDataSourceEnumerator instance = SqlDataSourceEnumerator.Instance;
             System.Data.DataTable table = instance.GetDataSources();
 
             // Display the contents of the table.
-            DisplayData(table);
+            DisplayData(table); 
 
             Console.WriteLine("Press any key to continue.");
             Console.ReadKey();
@@ -80,6 +80,59 @@ namespace DBExtractorSandbox
 
         private static void DisplayData(System.Data.DataTable table)
         {
+            String srvName = "";
+
+            foreach (System.Data.DataRow row in table.Rows)
+            {
+                if (srvName.Equals(""))
+                {
+                    srvName = row["ServerName"] + "\\" + row["InstanceName"];
+                }
+                else
+                {
+                    if (!row["InstanceName"].Equals("SQLEXPRESS"))
+                    {
+                        srvName = row["ServerName"] + "\\" + row["InstanceName"];
+                    }
+
+                }
+                Console.WriteLine(row["ServerName"] + "\\" + row["InstanceName"]);
+
+
+                SQLConnectionString sqlConnStr = new SQLConnectionString();
+
+                sqlConnStr.Server = srvName;
+                sqlConnStr.Authentication = true;
+                /*
+                if (!rbAuthWindows.Checked)
+                {
+                    sqlConnStr.UserID = txtUser.Text;
+                    sqlConnStr.Password = txtPassword.Text;
+                }
+                */
+
+                using (SqlConnection sqlConn = new SqlConnection(sqlConnStr.ConnectionString))
+                {
+                    try
+                    {
+                        sqlConn.Open();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("EX: " + ex.Message);
+                        Console.WriteLine("EX: " + sqlConnStr.ConnectionString);
+                        return;
+                    }
+                    DataTable tblDatabases = sqlConn.GetSchema("Databases");
+                    sqlConn.Close();
+
+                    foreach (DataRow rowTable in tblDatabases.Rows)
+                    {
+                        Console.WriteLine(rowTable["database_name"]);
+                    }
+                }
+            }
+            /*
             foreach (System.Data.DataRow row in table.Rows)
             {
                 foreach (System.Data.DataColumn col in table.Columns)
@@ -88,6 +141,7 @@ namespace DBExtractorSandbox
                 }
                 Console.WriteLine("============================");
             }
+            */
         }
     }
 }

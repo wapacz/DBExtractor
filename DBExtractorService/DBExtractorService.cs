@@ -40,8 +40,8 @@ namespace DBExtractor
         /// </summary>
         protected override void OnStart(string[] args)
         {
-            this.serviceThread.Start();
             base.OnStart(args);
+            this.serviceThread.Start();
         }
 
         /// <summary>
@@ -49,6 +49,7 @@ namespace DBExtractor
         /// </summary>
         protected override void OnStop()
         {
+            this.serviceThread.Abort();
             this.Stop();
             base.OnStop();
         }
