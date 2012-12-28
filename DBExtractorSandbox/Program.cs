@@ -71,7 +71,7 @@ namespace DBExtractorSandbox
             System.Data.DataTable table = instance.GetDataSources();
 
             // Display the contents of the table.
-            DisplayData(table); 
+            DisplayData(table);
 
             Console.WriteLine("Press any key to continue.");
             Console.ReadKey();
@@ -116,19 +116,37 @@ namespace DBExtractorSandbox
                     try
                     {
                         sqlConn.Open();
+
+                        DataTable tblDatabases = sqlConn.GetSchema("Databases");
+
+
+                        foreach (DataRow rowDBs in tblDatabases.Rows)
+                        {
+                            Console.WriteLine(rowDBs["database_name"]);
+
+                            if (rowDBs["database_name"].Equals("MagresNET"))
+                            {
+                                sqlConn.ChangeDatabase("MagresNET");
+                                Console.WriteLine("Found and selected");
+
+                                DataTable dt = sqlConn.GetSchema("Tables");
+                                foreach (DataRow rowTables in dt.Rows)
+                                {
+                                    Console.WriteLine(rowTables["table_name"]);
+                                }
+                            }
+
+                        }
+
+
+                        
+
+                        sqlConn.Close();
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("EX: " + ex.Message);
                         Console.WriteLine("EX: " + sqlConnStr.ConnectionString);
-                        return;
-                    }
-                    DataTable tblDatabases = sqlConn.GetSchema("Databases");
-                    sqlConn.Close();
-
-                    foreach (DataRow rowTable in tblDatabases.Rows)
-                    {
-                        Console.WriteLine(rowTable["database_name"]);
                     }
                 }
             }

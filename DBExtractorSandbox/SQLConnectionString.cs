@@ -62,8 +62,7 @@ namespace DBExtractorSandbox
             {
                 server = parseServer.Match(value).Groups["server"].Value;
                 database = parseDatabase.Match(value).Groups["database"].Value;
-                auth = database.Length == 0 ||
-                    parseAuth.Match(value).Groups["auth"].Value.Length > 0;
+                auth = database.Length == 0 || parseAuth.Match(value).Groups["auth"].Value.Length > 0;
                 user = parseUser.Match(value).Groups["user"].Value;
                 password = parsePassword.Match(value).Groups["password"].Value;
 
