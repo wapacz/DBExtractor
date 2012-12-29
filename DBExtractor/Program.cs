@@ -17,14 +17,20 @@ namespace DBExtractor
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             bool isFirstInstance;
+            FormMain form;
             // Please use a unique name for the mutex to prevent conflicts with other programs
             using (Mutex mtx = new Mutex(true, "DBExtractor", out isFirstInstance))
             {
                 if (isFirstInstance)
                 {
+                    Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
+                    AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+
                     //NotificationIcon notificationIcon = new NotificationIcon();
                     //notificationIcon.notifyIcon.Visible = true;
-                    Application.Run(new FormMain());
+                    form = new FormMain();
+                    form.ProcessScan();
+                    Application.Run(form);
                     //notificationIcon.notifyIcon.Dispose();
                 }
                 else
@@ -33,6 +39,18 @@ namespace DBExtractor
                     // TODO: Display message box or change focus to existing application instance
                 }
             } // releases the Mutex
+        }
+
+        static void Application_ThreadException(object sender, ThreadExceptionEventArgs e)
+        {
+            MessageBox.Show(e.Exception.Message, "Unhandled Thread Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // here you can log the exception ...
+        }
+
+        static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            MessageBox.Show((e.ExceptionObject as Exception).Message, "Unhandled UI Exception", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // here you can log the exception ...
         }
     }
 }
