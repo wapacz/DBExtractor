@@ -5,25 +5,43 @@ using System.Text;
 using System.ServiceProcess;
 using System.Threading;
 
-namespace DBExtractor
+using ITSharp.DBExtractor.Common;
+using System.IO;
+
+namespace ITSharp.DBExtractor
 {
     public class DBExtractorService : ServiceBase
     {
-        public const string MyServiceName = "DBExtractorService";
-
         private Thread serviceThread;
+        private Boolean forever;
         private TimeSpan delay;
+
+        private ScheduleEventList events;
+        private ScheduleEventList events2;
 
         public DBExtractorService()
         {
+            this.events = ScheduleEventList.Load(AppDomain.CurrentDomain.BaseDirectory + @"\events.bin");
+            this.events2 = ScheduleEventList.Load(@"c:\events.bin");
+
             InitializeComponent();
+
+            this.delay = new TimeSpan(0, 0, 1); // every second
+
+            this.serviceThread = new Thread(new ThreadStart(ServiceMain));
+            this.serviceThread.Priority = ThreadPriority.BelowNormal;
+            this.serviceThread.Name = "ServiceMain";
+
+            this.forever = true;
         }
 
         private void InitializeComponent()
         {
-            this.ServiceName = DBExtractorService.MyServiceName;
-            this.serviceThread = new Thread(new ThreadStart(ServiceMain));
-            this.delay = new TimeSpan(0, 0, 1, 0, 0); // one minute
+            // 
+            // DBExtractorService
+            // 
+            this.ServiceName = "DBExtractorService";
+
         }
 
         /// <summary>
@@ -49,16 +67,28 @@ namespace DBExtractor
         /// </summary>
         protected override void OnStop()
         {
-            this.serviceThread.Abort();
+            this.forever = false;
             this.Stop();
             base.OnStop();
         }
 
         protected void ServiceMain()
         {
-            while (true)
+            foreach (ScheduleEvent schedEvent in this.events)
+            {
+                System.IO.File.WriteAllText(@"c:\connectionString.txt", schedEvent.SQLConnectionString);
+            }
+            foreach (ScheduleEvent schedEvent in this.events2)
+            {
+                System.IO.File.WriteAllText(@"c:\connectionString2.txt", schedEvent.SQLConnectionString);
+            }
+            while (this.forever)
             {
                 //TODO: get the data from base, convert to XML and send to FTP
+
+
+
+                //DBExtractor.Common.
 
                 Thread.Sleep(this.delay);
             }

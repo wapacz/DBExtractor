@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace DBExtractorExchange
+namespace ITSharp.DBExtractor.Common
 {
     [Serializable()]
     public class DBExtractorSettings

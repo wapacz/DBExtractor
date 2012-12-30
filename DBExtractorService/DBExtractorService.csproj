@@ -42,19 +42,24 @@
     <Compile Include="DBExtractorService.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="DBHelper.cs" />
-    <Compile Include="FTPHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="XMLHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DBExtractorExchange\DBExtractorExchange.csproj">
-      <Project>{B416304B-7E48-4301-A801-DB8E4544A95B}</Project>
-      <Name>DBExtractorExchange</Name>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{B93D06E0-6F0C-43D0-B6BF-C98079250BE6}</Project>
+      <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DBExtractorService.resx">
+      <DependentUpon>DBExtractorService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

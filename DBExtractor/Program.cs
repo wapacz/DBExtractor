@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace DBExtractor
+namespace ITSharp.DBExtractor
 {
     static class Program
     {

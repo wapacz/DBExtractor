@@ -6,6 +6,8 @@ using System.Data.SqlClient;
 using System.Data.Sql;
 using System.Data;
 
+using ITSharp.DBExtractor.Common;
+
 namespace DBExtractorSandbox
 {
     class Program
