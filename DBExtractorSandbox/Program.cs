@@ -7,6 +7,8 @@ using System.Data.Sql;
 using System.Data;
 
 using ITSharp.DBExtractor.Common;
+using System.IO;
+using Microsoft.Win32;
 
 namespace DBExtractorSandbox
 {
@@ -68,15 +70,46 @@ namespace DBExtractorSandbox
             }
             */
 
-            // Retrieve the enumerator instance and then the data.
-            SqlDataSourceEnumerator instance = SqlDataSourceEnumerator.Instance;
-            System.Data.DataTable table = instance.GetDataSources();
+            //// Retrieve the enumerator instance and then the data.
+            //SqlDataSourceEnumerator instance = SqlDataSourceEnumerator.Instance;
+            //System.Data.DataTable table = instance.GetDataSources();
 
-            // Display the contents of the table.
-            DisplayData(table);
+            //// Display the contents of the table.
+            //DisplayData(table);
+
+
+            //FTPHelper.UploadFile(
+            //    @"C:\Program Files (x86)\DBExtractor\Kontrahenci.xml",
+            //    @"ftp://itsharp.pl/Kontrahenci.xml.part",
+            //    "bartoszulman@itsharp.pl",
+            //    "bUl!b2012"
+            //    );
+
+            //FTPHelper.RenameFile(
+            //    "Kontrahenci.xml",
+            //    @"ftp://itsharp.pl/Kontrahenci.xml.part",
+            //    "bartoszulman@itsharp.pl",
+            //    "bUl!b2012"
+            //    );
+
+
+            var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DateLinks.xml");
+            Console.WriteLine(fileName);
+
+
+            RegistryKey register = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\ITSharp.pl\DBExtractor");
+            string workingDir = ".aaa.";
+            if (register != null)
+                workingDir = Path.Combine(register.GetValue("UserWorkingDirectory").ToString(), "DBExtractor");
+
+            string eventsFilePath = Path.Combine(workingDir, @"events.bin");
+
+            Console.WriteLine(eventsFilePath);
 
             Console.WriteLine("Press any key to continue.");
             Console.ReadKey();
+
+
 
         }
 

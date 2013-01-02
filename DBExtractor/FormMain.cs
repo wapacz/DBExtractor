@@ -14,18 +14,20 @@ using System.Threading;
 
 using ITSharp.DBExtractor.Common;
 using ITSharp.DBExtractor.GUI;
+using System.Security.AccessControl;
 
 namespace ITSharp.DBExtractor
 {
     public partial class FormMain : Form
     {
-        const string FileName = @"settings.bin";
-        const string EventsFileName = @"events.bin";
-        DBExtractorSettings settings;
-        ScheduleEventList events;
+        private static readonly string WorkingDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DBExtractor");
+        private static readonly string SettingsFilePath = Path.Combine(WorkingDirectory, "settings.bin");
+        private static readonly string EventsFilePath = Path.Combine(WorkingDirectory, "events.bin");
+        private DBExtractorSettings settings;
+        private ScheduleEventList events;
 
-        SQLConnectionHelper sql;
-        FTPHelper ftp;
+        private SQLConnectionHelper sql;
+        private FTPHelper ftp;
 
         public FormMain()
         {
@@ -39,9 +41,10 @@ namespace ITSharp.DBExtractor
             /*
              * Loading settings from file if available
              */
-            //if (File.Exists(FileName))
-            this.settings = DBExtractorSettings.Load(FileName);
-            this.events = ScheduleEventList.Load(EventsFileName);
+            if (!Directory.Exists(WorkingDirectory))
+                Directory.CreateDirectory(WorkingDirectory);
+            this.settings = DBExtractorSettings.Load(SettingsFilePath);
+            this.events = ScheduleEventList.Load(EventsFilePath);
             //else
             //    this.settings = new DBExtractorSettings(FileName);
 
@@ -402,7 +405,7 @@ namespace ITSharp.DBExtractor
             this.ftp.Address = this.tbFTPAdress.Text;
             this.ftp.Login = this.tbFTPUserName.Text;
             this.ftp.Password = this.tbFTPUserPass.Text;
-            this.ftp.RemotePath = this.tbFTPRemotePath.Text;
+            //this.ftp.RemotePath = this.tbFTPRemotePath.Text;
 
             this.bFTPConnectTest.Enabled = false;
             this.pbFTPConnectTest.Show();
@@ -428,7 +431,7 @@ namespace ITSharp.DBExtractor
                 this.settings.FtpAddress = this.ftp.Address;
                 this.settings.FtpUserName = this.ftp.Login;
                 this.settings.FtpUserPassword = this.ftp.Password;
-                this.settings.FtpRemotePath = this.ftp.RemotePath;
+                this.settings.FtpRemotePath = this.tbFTPRemotePath.Text; //this.ftp.RemotePath;
                 this.settings.Save();
 
                 MessageBox.Show("Połączenie z serwerem FTP działa poprawnie.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -462,7 +465,7 @@ namespace ITSharp.DBExtractor
             if (!this.sql.ConnectionString.ConnectionString.Equals("")) // check if is connected ???
                 schEv.SQLConnectionString = this.sql.ConnectionString.ConnectionString;
 
-            if (this.lbTables.SelectedIndex > 0)
+            if (this.lbTables.SelectedIndex >= 0)
                 schEv.SQLTable = this.lbTables.SelectedItem.ToString();
 
             // FTP
