@@ -82,14 +82,14 @@ namespace ITSharp.DBExtractor
              */
             try
             {
-                ServiceHelper sh = new ServiceHelper("DBExtractorService");
-                this.notifyIcon1.Text += "\nService found";
+                ServiceHelper sh = new ServiceHelper("DBExtractor");
+                this.notifyIcon1.Text += "\nUsługa pracuje prawidłowo.";
                 this.lServiceStatus.Text = "Usługa pracuje prawidłowo.";
             }
             catch (ServiceNotFoundException)
             {
                 Console.WriteLine("blad");
-                this.notifyIcon1.Text += "\nService not found";
+                this.notifyIcon1.Text += "\nUsługa nie pracuje.";
                 this.lServiceStatus.Text = "Usługa nie pracuje.";
             }
 
