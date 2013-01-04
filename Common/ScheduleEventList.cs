@@ -6,7 +6,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
-namespace ITSharp.DBExtractor.Common
+namespace ITSharp.ScheDEX.Common
 {
     [Serializable()]
     public class ScheduleEventList : ArrayList

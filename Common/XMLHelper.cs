@@ -6,7 +6,7 @@ using System.Xml;
 using System.IO;
 using System.Xml.Serialization;
 
-namespace ITSharp.DBExtractor.Common
+namespace ITSharp.ScheDEX.Common
 {
     public class XMLHelper
     {

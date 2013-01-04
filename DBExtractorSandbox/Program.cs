@@ -6,11 +6,11 @@ using System.Data.SqlClient;
 using System.Data.Sql;
 using System.Data;
 
-using ITSharp.DBExtractor.Common;
+using ITSharp.ScheDEX.Common;
 using System.IO;
 using Microsoft.Win32;
 
-namespace DBExtractorSandbox
+namespace ScheDEXSandbox
 {
     class Program
     {
@@ -93,18 +93,22 @@ namespace DBExtractorSandbox
             //    );
 
 
-            var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DateLinks.xml");
-            Console.WriteLine(fileName);
+            //var fileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DateLinks.xml");
+            //Console.WriteLine(fileName);
 
 
-            RegistryKey register = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\ITSharp.pl\DBExtractor");
-            string workingDir = ".aaa.";
-            if (register != null)
-                workingDir = Path.Combine(register.GetValue("UserWorkingDirectory").ToString(), "DBExtractor");
+            //RegistryKey register = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\ITSharp.pl\DBExtractor");
+            //string workingDir = ".aaa.";
+            //if (register != null)
+            //    workingDir = Path.Combine(register.GetValue("UserWorkingDirectory").ToString(), "DBExtractor");
 
-            string eventsFilePath = Path.Combine(workingDir, @"events.bin");
+            //string eventsFilePath = Path.Combine(workingDir, @"events.bin");
 
-            Console.WriteLine(eventsFilePath);
+            //Console.WriteLine(eventsFilePath);
+
+
+
+
 
             Console.WriteLine("Press any key to continue.");
             Console.ReadKey();

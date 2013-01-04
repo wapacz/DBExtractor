@@ -42,7 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DBExtractorSettings.cs" />
+    <Compile Include="ScheDEXSettings.cs" />
     <Compile Include="FTPHelper.cs" />
     <Compile Include="ScheduleEvent.cs" />
     <Compile Include="ScheduleEventList.cs" />

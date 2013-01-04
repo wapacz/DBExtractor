@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ITSharp.DBExtractor.Common
+namespace ITSharp.ScheDEX.Common
 {
     /// <summary>
     /// Manages Sql Connection String

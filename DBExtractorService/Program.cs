@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ServiceProcess;
 using System.Text;
 
-namespace ITSharp.DBExtractor
+namespace ITSharp.ScheDEX
 {
     static class Program
     {
@@ -13,7 +13,7 @@ namespace ITSharp.DBExtractor
         static void Main()
         {
             // To run more than one service you have to add them here
-            ServiceBase.Run(new ServiceBase[] { new DBExtractorService() });
+            ServiceBase.Run(new ServiceBase[] { new ScheDEXService() });
         }
     }
 }

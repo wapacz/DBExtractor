@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ITSharp.DBExtractor.Common
+namespace ITSharp.ScheDEX.Common
 {
     [Serializable()]
     public class ScheduleEvent

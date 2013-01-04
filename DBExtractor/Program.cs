@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Threading;
 
-namespace ITSharp.DBExtractor
+namespace ITSharp.ScheDEX
 {
     static class Program
     {
@@ -19,7 +19,7 @@ namespace ITSharp.DBExtractor
             bool isFirstInstance;
             FormMain form;
             // Please use a unique name for the mutex to prevent conflicts with other programs
-            using (Mutex mtx = new Mutex(true, "DBExtractor", out isFirstInstance))
+            using (Mutex mtx = new Mutex(true, "ScheDEX", out isFirstInstance))
             {
                 if (isFirstInstance)
                 {

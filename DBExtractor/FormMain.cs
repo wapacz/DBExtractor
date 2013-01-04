@@ -12,22 +12,28 @@ using System.Collections;
 using System.Data.Sql;
 using System.Threading;
 
-using ITSharp.DBExtractor.Common;
-using ITSharp.DBExtractor.GUI;
+using ITSharp.ScheDEX.Common;
+using ITSharp.ScheDEX.GUI;
 using System.Security.AccessControl;
 
-namespace ITSharp.DBExtractor
+namespace ITSharp.ScheDEX
 {
     public partial class FormMain : Form
     {
-        private static readonly string WorkingDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "DBExtractor");
+        private static readonly Font RegularFont = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+        private static readonly Font BoldFont = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+
+        private static readonly string WorkingDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ScheDEX");
         private static readonly string SettingsFilePath = Path.Combine(WorkingDirectory, "settings.bin");
         private static readonly string EventsFilePath = Path.Combine(WorkingDirectory, "events.bin");
-        private DBExtractorSettings settings;
-        private ScheduleEventList events;
+        internal ScheDEXSettings settings;
+        internal ScheduleEventList events;
+        private Dictionary<String, UserControl> userPanels;
+        private Dictionary<String, Bitmap> leftSideImages;
 
-        private SQLConnectionHelper sql;
-        private FTPHelper ftp;
+        internal SQLConnectionHelper sql;
+        internal FTPHelper ftp;
+        internal ServiceHelper service;
 
         public FormMain()
         {
@@ -39,212 +45,135 @@ namespace ITSharp.DBExtractor
         private void InitializeMyComponent()
         {
             /*
-             * Loading settings from file if available
+             * Create working directory if not exists
              */
             if (!Directory.Exists(WorkingDirectory))
                 Directory.CreateDirectory(WorkingDirectory);
-            this.settings = DBExtractorSettings.Load(SettingsFilePath);
+            
+            /*
+             * Loading settings from file if available
+             */
+            this.settings = ScheDEXSettings.Load(SettingsFilePath);
             this.events = ScheduleEventList.Load(EventsFilePath);
-            //else
-            //    this.settings = new DBExtractorSettings(FileName);
 
             /*
-             * Initialize SQL connection helper
+             * Initialize events related issues
              */
-            this.sql = new SQLConnectionHelper();
+            this.eventsP.ContainerForm = this;
+            
+            /*
+             * Initialize SQL connection related issues
+             */
+            this.sqlP.ContainerForm = this;
             this.sql.ConnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_ConnectionEvent);
             this.sql.DisconnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_DisconnectionEvent);
             this.sql.ServerNamesHasBeenFetched += new EventHandler(sql_ServerNamesHasBeenFetched);
-            this.sql.DatabasesHasBeenFetched += new EventHandler(sql_DatabasesHasBeenFetched);
-            this.sql.TablesHasBeenFetched += new EventHandler(sql_TablesHasBeenFetched);
-
+            
             /*
-             * Initialize FTP helper
+             * Initialize FTP related issues
              */
-            this.ftp = new FTPHelper();
-            this.ftp.ConnectionEvent += new EventHandler<FTPConnectionEventArgs>(ftp_ConnectionEvent);
-
+            this.ftpP.ContainerForm = this;
+            
             /*
-             * Service controler handler
+             * Service controler related issues
              */
-            // TODO: Service handler goes here
-
+            this.serviceP.ContainerForm = this;
+            this.service.FindingEvent += new EventHandler<ServiceEventArgs>(service_FindingEvent);
             /*
              * Store settings
              */
             //this.settings.Save();
+
+            /*
+             * Handle switching of UserControls
+             */
+            this.userPanels = new Dictionary<String, UserControl>();
+            this.leftSideImages = new Dictionary<String, Bitmap>();
+            // events panel
+            this.userPanels[this.llEventsConfig.Name] = this.eventsP;
+            this.leftSideImages[this.llEventsConfig.Name] = global::ScheDEX.Properties.Resources.scheduled_tasks_3_128x128;
+            // sql panel
+            this.userPanels[this.llSqlConfig.Name] = this.sqlP;
+            this.leftSideImages[this.llSqlConfig.Name] = global::ScheDEX.Properties.Resources.new_database_128x128;
+            // ftp panel
+            this.userPanels[this.llFtpConfig.Name] = this.ftpP;
+            this.leftSideImages[this.llFtpConfig.Name] = global::ScheDEX.Properties.Resources.location_ftp_128x128;
+            // service panel
+            this.userPanels[this.llServiceConfig.Name] = this.serviceP;
+            this.leftSideImages[this.llServiceConfig.Name] = global::ScheDEX.Properties.Resources.kservices_128x128;
         }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            /*
-             * Fetching related service handler
-             */
-            try
-            {
-                ServiceHelper sh = new ServiceHelper("DBExtractor");
-                this.notifyIcon1.Text += "\nUsługa pracuje prawidłowo.";
-                this.lServiceStatus.Text = "Usługa pracuje prawidłowo.";
-            }
-            catch (ServiceNotFoundException)
-            {
-                Console.WriteLine("blad");
-                this.notifyIcon1.Text += "\nUsługa nie pracuje.";
-                this.lServiceStatus.Text = "Usługa nie pracuje.";
-            }
 
 
-            // FTP
-            this.tbFTPAdress.Text = this.settings.FtpAddress;
-            this.tbFTPUserName.Text = this.settings.FtpUserName;
-            this.tbFTPUserPass.Text = this.settings.FtpUserPassword;
-            this.tbFTPRemotePath.Text = this.settings.FtpRemotePath;
 
             // Interval
-            this.tbInterval.Text = this.settings.Interval.ToString();
+            //UNDO//this.tbInterval.Text = this.settings.Interval.ToString();
 
             // Events
-            this.lbScheduleEvents.Items.AddRange(this.events.ToArray());
+            //UNDO//this.lbScheduleEvents.Items.AddRange(this.events.ToArray());
+        }
+        
+        public void ProcessScan()
+        {
+            this.statusBarLabel.Text = "Szukam instancji MSSQL...";
+            
+            this.sqlP.ProcessScan();
         }
 
-        #region SQL helper methods
-        /*
-         * SQL helper event methods
-         */
+        private void service_FindingEvent(object sender, ServiceEventArgs args)
+        {
+            if (args.IsSuccess)
+            {
+                //this.notifyIcon1.InvokeIfRequired(() =>
+                //{
+                    this.notifyIcon1.Text += "\nUsługa pracuje prawidłowo.";
+                //});
+            }
+            else
+            {
+                //this.notifyIcon1.InvokeIfRequired(() =>
+                //{
+                    this.notifyIcon1.Text += "\nUsługa nie pracuje.";
+                //});
+            }
+        }
+
         private void sql_ServerNamesHasBeenFetched(object sender, EventArgs args)
         {
-            this.cbServerNames.InvokeIfRequired(() =>
-            {
-                this.pbServerNamesLoader.Hide();
-
-                this.cbServerNames.Enabled = true;
-                this.cbServerNames.Items.AddRange(((SQLConnectionHelper)sender).ServerNames.ToArray());
-                this.cbServerNames.Text = ((SQLConnectionHelper)sender).DefaultServerName;
-
-                this.lAuth.Enabled = true;
-                this.rbAuthWindows.Enabled = true;
-                this.rbAuthSQLServer.Enabled = true;
-
-                this.bSQLConnect.Enabled = true;
-
+            //this.statusBarLabel.InvokeIfRequired(() =>
+            //{
                 this.statusBarLabel.Text = "";
-            });
+            //});
         }
 
         private void sql_ConnectionEvent(object sender, SQLConnectionEventArgs args)
         {
-            Console.WriteLine("Poszło3");
-
-
-            this.bSQLConnect.InvokeIfRequired(() =>
-                {
-                    this.bSQLConnect.Enabled = true;
-                    this.pbConnecting.Hide();
-                    this.statusBarLabel.Text = "";
-                });
-
-            if (args.IsSuccess)
-            {
-                Console.WriteLine("Poszło4");
-
-                this.pDBData.InvokeIfRequired(() =>
-                    {
-                        this.pDBData.Show();
-                        this.pDBConnection.Hide();
-                    });
-
-                /*
-                 * Check if key is alrady in connection strings dicionary...
-                 */
-                if (this.settings.SqlConnectionStrings.ContainsKey(this.sql.ConnectionString.Server))
-                {
-                    /*
-                     * ... if so, then update it
-                     */
-                    this.settings.SqlConnectionStrings[this.sql.ConnectionString.Server] =
-                        this.sql.ConnectionString.ConnectionString;
-                }
-                else
-                {
-                    /*
-                     * ... if not, then create it
-                     */
-                    this.settings.SqlConnectionStrings.Add(
-                        this.sql.ConnectionString.Server,
-                        this.sql.ConnectionString.ConnectionString
-                        );
-                }
-                this.settings.Save();
-
-                this.statusBarLabel.Text = "Szukam baz danych...";
-                this.sql.StartScanDatabases();
-            }
-            else
-            {
-                this.pDBData.InvokeIfRequired(() =>
-                {
-                    this.pDBConnection.Show();
-                    this.pDBData.Hide();
-                });
-
-                /*
-                 * Check if key is alrady in connection strings dicionary...
-                 */
-                if (this.settings.SqlConnectionStrings.ContainsKey(this.sql.ConnectionString.Server))
-                {
-                    /*
-                     * ... if so, then remove it, because it is not working correctly
-                     */
-                    this.settings.SqlConnectionStrings.Remove(this.sql.ConnectionString.Server);
-                }
-
-                Console.WriteLine("Poszło5");
-                MessageBox.Show("Wystapił błąd podczas połączenia z bazą.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                Console.WriteLine("Poszło6");
-            }
+            //this.statusBarLabel.InvokeIfRequired(() =>
+            //{
+                this.statusBarLabel.Text = "";
+            //});
         }
 
         private void sql_DisconnectionEvent(object sender, SQLConnectionEventArgs args)
         {
-            this.cbDatabases.InvokeIfRequired(() =>
-            {
-                this.lbTables.Items.Clear();
-                this.cbDatabases.Items.Clear();
-                this.cbDatabases.Text = "";
-                //TODO: ...
+            //this.statusBarLabel.InvokeIfRequired(() =>
+            //{
                 this.statusBarLabel.Text = "";
-            });
+            //});
         }
 
-        private void sql_DatabasesHasBeenFetched(object sender, EventArgs args)
-        {
-            this.cbDatabases.InvokeIfRequired(() =>
-            {
-                this.pbDatabasesLoader.Hide();
-                this.cbDatabases.Enabled = true;
-                this.cbDatabases.Items.AddRange(((SQLConnectionHelper)sender).Databases.ToArray());
-                this.cbDatabases.Text = ((SQLConnectionHelper)sender).DefaultDatabase;
 
-                this.statusBarLabel.Text = "";
-            });
-        }
-        #endregion
 
-        public void ProcessScan()
-        {
-            this.statusBarLabel.Text = "Szukam instancji MSSQL...";
-            this.pbServerNamesLoader.Show();
-            this.cbServerNames.Items.Clear();
-            this.cbServerNames.Enabled = false;
 
-            this.lAuth.Enabled = false;
-            this.rbAuthWindows.Enabled = false;
-            this.rbAuthSQLServer.Enabled = false;
 
-            this.bSQLConnect.Enabled = false;
 
-            this.sql.StartScanServerNames();
-        }
+
+
+
+
+
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -279,175 +208,15 @@ namespace ITSharp.DBExtractor
             //this.pictureBox1.Hide();
         }
 
-        private void cbServerNames_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            String sqlConnString;
-
-            if (this.sql.IsConnected)
-                this.sql.Dissconnect();
-
-
-            if (this.settings.SqlConnectionStrings.TryGetValue(this.cbServerNames.Text, out sqlConnString))
-            {
-                /*
-                 * If settings for this connetion string are known then try to make shortcut
-                 */
-                this.pDBData.Show();
-                this.pDBConnection.Hide();
-
-                this.sql.ConnectionString.ConnectionString = sqlConnString;
 
 
 
-
-
-
-                this.statusBarLabel.Text = "Próba połączenia z bazą...";
-                //this.pbDatabasesLoader.Show();
-                //this.cbDatabases.Items.Clear();
-                //this.cbDatabases.Enabled = false;
-
-                //this.mssql.StartScanDatabases();
-
-                this.bSQLConnect.Enabled = false;
-                this.pbConnecting.Show();
-
-                this.sql.StartConnect();
-            }
-            else
-            {
-                /*
-                 * If settings for this connection string are not know then go in the normal way
-                 */
-                this.pDBConnection.Show();
-                this.pDBData.Hide();
-
-                this.sql.ConnectionString.Server = this.cbServerNames.Text;
-                //this.settings.Save();
-            }
-        }
-
-        private void rbAuthSQLServer_CheckedChanged(object sender, EventArgs e)
-        {
-            this.lUserName.Enabled = true;
-            this.lUserPass.Enabled = true;
-            this.tbSQLUserName.Enabled = true;
-            this.tbSQLUserPass.Enabled = true;
-
-            this.sql.ConnectionString.Authentication = false;
-            this.settings.Save();
-        }
-
-        private void rbAuthWindows_CheckedChanged(object sender, EventArgs e)
-        {
-            this.lUserName.Enabled = false;
-            this.lUserPass.Enabled = false;
-            this.tbSQLUserName.Enabled = false;
-            this.tbSQLUserPass.Enabled = false;
-
-            this.sql.ConnectionString.Authentication = true;
-            this.settings.Save();
-        }
-
-        private void bConnect_Click(object sender, EventArgs e)
-        {
-            if (this.rbAuthSQLServer.Checked)
-            //if(!this.settings.sql.ConnectionString.Authentication)
-            {
-                if (this.tbSQLUserName.Text.Equals("") || this.tbSQLUserPass.Text.Equals(""))
-                {
-                    MessageBox.Show("Ta metoda uwieżytelniania wymaga podania nazwy użytkownika i hasła", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
-                this.sql.ConnectionString.UserID = this.tbSQLUserName.Text;
-                this.sql.ConnectionString.Password = this.tbSQLUserPass.Text;
-            }
-
-            this.statusBarLabel.Text = "Próba połączenia z bazą...";
-            //this.pbDatabasesLoader.Show();
-            //this.cbDatabases.Items.Clear();
-            //this.cbDatabases.Enabled = false;
-
-            //this.mssql.StartScanDatabases();
-
-            this.bSQLConnect.Enabled = false;
-            this.pbConnecting.Show();
-
-            this.sql.StartConnect();
-        }
-
-
-        private void cbDatabases_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            this.lbTables.Items.Clear();
-            this.sql.Connection.ChangeDatabase(this.cbDatabases.Text);
-            this.sql.ConnectionString.Database = this.cbDatabases.Text;
-            this.sql.StartScanTables();
-        }
-
-        private void sql_TablesHasBeenFetched(object sender, EventArgs args)
-        {
-            this.lbTables.InvokeIfRequired(() =>
-            {
-                ((SQLConnectionHelper)sender).Tables.Sort();
-                this.lbTables.Items.AddRange(((SQLConnectionHelper)sender).Tables.ToArray());
-            });
-        }
-
-        #region FTP helper methods
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void bFTPConnect_Click(object sender, EventArgs e)
-        {
-            this.ftp.Address = this.tbFTPAdress.Text;
-            this.ftp.Login = this.tbFTPUserName.Text;
-            this.ftp.Password = this.tbFTPUserPass.Text;
-            //this.ftp.RemotePath = this.tbFTPRemotePath.Text;
-
-            this.bFTPConnectTest.Enabled = false;
-            this.pbFTPConnectTest.Show();
-
-            this.ftp.StartCheckConnection();
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
-        private void ftp_ConnectionEvent(object sender, FTPConnectionEventArgs args)
-        {
-            this.bFTPConnectTest.InvokeIfRequired(() =>
-                {
-                    this.bFTPConnectTest.Enabled = true;
-                    this.pbFTPConnectTest.Hide();
-                });
-
-            if (args.IsSuccess)
-            {
-                this.settings.FtpAddress = this.ftp.Address;
-                this.settings.FtpUserName = this.ftp.Login;
-                this.settings.FtpUserPassword = this.ftp.Password;
-                this.settings.FtpRemotePath = this.tbFTPRemotePath.Text; //this.ftp.RemotePath;
-                this.settings.Save();
-
-                MessageBox.Show("Połączenie z serwerem FTP działa poprawnie.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
-            else
-            {
-                MessageBox.Show("Nie udało się połączyć z FTPem\n\nSzczegóły: " + sender.ToString(), "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-        }
-        #endregion
 
         private void tbInterval_TextChanged(object sender, EventArgs e)
         {
             try
             {
-                this.settings.Interval = uint.Parse(this.tbInterval.Text);
+                //UNDO//this.settings.Interval = uint.Parse(this.tbInterval.Text);
                 this.settings.Save();
             }
             catch (Exception ex)
@@ -465,50 +234,50 @@ namespace ITSharp.DBExtractor
             if (!this.sql.ConnectionString.ConnectionString.Equals("")) // check if is connected ???
                 schEv.SQLConnectionString = this.sql.ConnectionString.ConnectionString;
 
-            if (this.lbTables.SelectedIndex >= 0)
-                schEv.SQLTable = this.lbTables.SelectedItem.ToString();
+            //UNDO//if (this.lbTables.SelectedIndex >= 0)
+            //UNDO//    schEv.SQLTable = this.lbTables.SelectedItem.ToString();
 
             // FTP
-            if (!this.tbFTPAdress.Text.Equals(""))
-                schEv.FTPAddress = this.tbFTPAdress.Text;
+            //UNDO//if (!this.tbFTPAdress.Text.Equals(""))
+            //UNDO//    schEv.FTPAddress = this.tbFTPAdress.Text;
 
-            if (!this.tbFTPUserName.Text.Equals(""))
-                schEv.FTPLogin = this.tbFTPUserName.Text;
+            //UNDO//if (!this.tbFTPUserName.Text.Equals(""))
+            //UNDO//    schEv.FTPLogin = this.tbFTPUserName.Text;
 
-            if (!this.tbFTPUserPass.Text.Equals(""))
-                schEv.FTPPassword = this.tbFTPUserPass.Text;
+            //UNDO//if (!this.tbFTPUserPass.Text.Equals(""))
+            //UNDO//    schEv.FTPPassword = this.tbFTPUserPass.Text;
 
-            if (!this.tbFTPRemotePath.Text.Equals(""))
-                schEv.FTPRemotePath = this.tbFTPRemotePath.Text;
+            //UNDO//if (!this.tbFTPRemotePath.Text.Equals(""))
+            //UNDO//    schEv.FTPRemotePath = this.tbFTPRemotePath.Text;
 
             //if(this.ftp.IsValid)
 
-            schEv.Interval = uint.Parse(this.tbInterval.Text);
+            //UNDO//schEv.Interval = uint.Parse(this.tbInterval.Text);
 
-            schEv.XMLFileName = this.tbXMLFileName.Text;
+            //UNDO//schEv.XMLFileName = this.tbXMLFileName.Text;
 
             /*
              * Check if any schedule event is ...
              */
-            if (this.lbScheduleEvents.SelectedIndex < 0)
-            {
+            //UNDO//if (this.lbScheduleEvents.SelectedIndex < 0)
+            //UNDO//{
                 /*
                  * ... not selected, then create new one
                  */
-                lbScheduleEvents.Items.Add(schEv);
-                this.events.Add(schEv);
-                this.events.Save();
-            }
-            else
-            {
+            //UNDO//    lbScheduleEvents.Items.Add(schEv);
+            //UNDO//    this.events.Add(schEv);
+            //UNDO//    this.events.Save();
+            //UNDO//}
+            //UNDO//else
+            //UNDO//{
                 /*
                  * ... slected then, update it
                  */
-                int index = lbScheduleEvents.SelectedIndex;
-                lbScheduleEvents.Items[index] = schEv;
-                this.events[index] = schEv;
-                this.events.Save();
-            }
+            //UNDO//    int index = lbScheduleEvents.SelectedIndex;
+            //UNDO//    lbScheduleEvents.Items[index] = schEv;
+            //UNDO//    this.events[index] = schEv;
+            //UNDO//    this.events.Save();
+            //UNDO//}
 
             
             Console.WriteLine(schEv.ToString());
@@ -516,18 +285,18 @@ namespace ITSharp.DBExtractor
 
         private void lbScheduleEvents_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.lbScheduleEvents.SelectedIndex < 0)
-                return;
+            //UNDO//if (this.lbScheduleEvents.SelectedIndex < 0)
+            //UNDO//    return;
 
-            ScheduleEvent schedEvent = (ScheduleEvent)this.lbScheduleEvents.SelectedItem;
-            SQLConnectionString sqlConnString = new SQLConnectionString();
-            sqlConnString.ConnectionString = schedEvent.SQLConnectionString;
-            if (this.cbServerNames.Items.Contains(sqlConnString.Server))
-            {
-                this.cbServerNames.Text = sqlConnString.Server;
-            }
-            else
-            {
+            //UNDO//ScheduleEvent schedEvent = (ScheduleEvent)this.lbScheduleEvents.SelectedItem;
+            //UNDO//SQLConnectionString sqlConnString = new SQLConnectionString();
+            //UNDO//sqlConnString.ConnectionString = schedEvent.SQLConnectionString;
+            //UNDO//if (this.cbServerNames.Items.Contains(sqlConnString.Server))
+            //UNDO//{
+            //UNDO//    this.cbServerNames.Text = sqlConnString.Server;
+            //UNDO//}
+            //UNDO//else
+            //UNDO//{
                 DialogResult result = MessageBox.Show(
                     "Nie ma takiej bazy na liście.\n\nCzy chcesz usnąć to zdarzenie z listy?",
                     "Ostrzeżenie",
@@ -537,12 +306,12 @@ namespace ITSharp.DBExtractor
 
                 if (result == DialogResult.Yes)
                 {
-                    object toDelete = lbScheduleEvents.SelectedItem;
-                    lbScheduleEvents.Items.Remove(toDelete);
-                    this.events.Remove(toDelete);
+                    //UNDO//object toDelete = lbScheduleEvents.SelectedItem;
+                    //UNDO//lbScheduleEvents.Items.Remove(toDelete);
+                    //UNDO//this.events.Remove(toDelete);
                     this.events.Save();
                 }
-            }
+            //UNDO//}
         }
 
         private void lbScheduleEvents_Leave(object sender, EventArgs e)
@@ -552,10 +321,30 @@ namespace ITSharp.DBExtractor
 
         private void bRemoveScheduleEvent_Click(object sender, EventArgs e)
         {
-            object toDelete = lbScheduleEvents.SelectedItem;
-            this.events.Remove(toDelete);
-            lbScheduleEvents.Items.Remove(toDelete);
+            //UNDO//object toDelete = lbScheduleEvents.SelectedItem;
+            //UNDO//this.events.Remove(toDelete);
+            //UNDO//lbScheduleEvents.Items.Remove(toDelete);
             this.events.Save();
+        }
+
+        private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            String key = ((LinkLabel)sender).Name;
+            
+            foreach(var pair in this.userPanels)
+            {
+                ((LinkLabel)this.panelLinks.Controls[pair.Key]).Font = RegularFont;
+
+                pair.Value.Hide();
+                pair.Value.Enabled = false;
+            }
+
+            ((LinkLabel)this.panelLinks.Controls[key]).Font = BoldFont;
+
+            this.userPanels[key].Show();
+            this.userPanels[key].Enabled = true;
+
+            this.pLeftSideImage.BackgroundImage = this.leftSideImages[key];
         }
     }
 }

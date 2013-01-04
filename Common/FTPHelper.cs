@@ -6,7 +6,7 @@ using System.Net;
 using System.IO;
 using System.Threading;
 
-namespace ITSharp.DBExtractor.Common
+namespace ITSharp.ScheDEX.Common
 {
     public class FTPHelper
     {

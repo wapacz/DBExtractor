@@ -124,4 +124,19 @@
   <data name="loader1" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\loader1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="staff-scheduler-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\staff-scheduler-icon1.gif;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="kservices-128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\kservices-128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="location-ftp-128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\location-ftp-128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="new-database-128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\new-database-128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="scheduled-tasks-3-128x128" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\scheduled-tasks-3-128x128.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
 </root>

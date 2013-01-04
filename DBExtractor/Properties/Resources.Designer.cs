@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace DBExtractor.Properties {
+namespace ScheDEX.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace DBExtractor.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("DBExtractor.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ScheDEX.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,6 +60,13 @@ namespace DBExtractor.Properties {
             }
         }
         
+        internal static System.Drawing.Bitmap kservices_128x128 {
+            get {
+                object obj = ResourceManager.GetObject("kservices-128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap loader {
             get {
                 object obj = ResourceManager.GetObject("loader", resourceCulture);
@@ -70,6 +77,34 @@ namespace DBExtractor.Properties {
         internal static System.Drawing.Bitmap loader1 {
             get {
                 object obj = ResourceManager.GetObject("loader1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap location_ftp_128x128 {
+            get {
+                object obj = ResourceManager.GetObject("location-ftp-128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap new_database_128x128 {
+            get {
+                object obj = ResourceManager.GetObject("new-database-128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap scheduled_tasks_3_128x128 {
+            get {
+                object obj = ResourceManager.GetObject("scheduled-tasks-3-128x128", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap staff_scheduler_icon {
+            get {
+                object obj = ResourceManager.GetObject("staff-scheduler-icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

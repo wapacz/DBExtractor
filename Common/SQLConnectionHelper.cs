@@ -8,7 +8,7 @@ using System.Data.Sql;
 using System.Data;
 using System.Data.SqlClient;
 
-namespace ITSharp.DBExtractor.Common
+namespace ITSharp.ScheDEX.Common
 {
     public class SQLConnectionHelper
     {

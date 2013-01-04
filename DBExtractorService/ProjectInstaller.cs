@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Configuration.Install;
 using System.ServiceProcess;
 
-namespace ITSharp.DBExtractor
+namespace ITSharp.ScheDEX
 {
     [RunInstaller(true)]
     public class ProjectInstaller : Installer
@@ -19,7 +19,7 @@ namespace ITSharp.DBExtractor
             // Here you can set properties on serviceProcessInstaller or register event handlers
             serviceProcessInstaller.Account = ServiceAccount.LocalService;
 
-            serviceInstaller.ServiceName = "DBExtractorService";
+            serviceInstaller.ServiceName = "ScheDEXService";
             this.Installers.AddRange(new Installer[] { serviceProcessInstaller, serviceInstaller });
         }
 
