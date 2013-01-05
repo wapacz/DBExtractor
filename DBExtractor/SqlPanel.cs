@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using ITSharp.ScheDEX.Common;
 using ITSharp.ScheDEX.GUI;
+using System.Data.SqlClient;
 
 namespace ITSharp.ScheDEX
 {
@@ -17,24 +18,24 @@ namespace ITSharp.ScheDEX
         private ScheDEXSettings settings;
         private SQLConnectionHelper sql;
 
-        public SqlPanel()
+        public SqlPanel(FormMain container)
         {
             InitializeComponent();
             this.Dock = DockStyle.Fill;
 
+            this.container = container;
+            this.settings = container.settings;
+            
             /*
              * Initialize SQL helper
              */
             this.sql = new SQLConnectionHelper();
             this.sql.ConnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_ConnectionEvent);
-            this.sql.DisconnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_DisconnectionEvent);
+            //this.sql.DisconnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_DisconnectionEvent);
             this.sql.ServerNamesHasBeenFetched += new EventHandler(sql_ServerNamesHasBeenFetched);
             this.sql.DatabasesHasBeenFetched += new EventHandler(sql_DatabasesHasBeenFetched);
-        }
 
-        private void SqlPanel_Load(object sender, EventArgs e)
-        {
-
+            container.sql = this.sql;
         }
 
         public void ProcessScan()
@@ -83,128 +84,72 @@ namespace ITSharp.ScheDEX
 
             if (args.IsSuccess)
             {
-                //this.pDBData.InvokeIfRequired(() =>
-                //    {
-                //        this.pDBData.Show();
-                //        this.pDBConnection.Hide();
-                //    });
-
-                /*
-                 * Check if key is alrady in connection strings dicionary...
-                 */
-                if (this.settings.SqlConnectionStrings.ContainsKey(this.sql.ConnectionString.Server))
-                {
-                    /*
-                     * ... if so, then update it
-                     */
-                    this.settings.SqlConnectionStrings[this.sql.ConnectionString.Server] =
-                        this.sql.ConnectionString.ConnectionString;
-                }
-                else
-                {
-                    /*
-                     * ... if not, then create it
-                     */
-                    this.settings.SqlConnectionStrings.Add(
-                        this.sql.ConnectionString.Server,
-                        this.sql.ConnectionString.ConnectionString
-                        );
-                }
-                this.settings.Save();
-
                 this.sql.StartScanDatabases();
             }
             else
             {
-                //this.pDBData.InvokeIfRequired(() =>
-                //{
-                //    this.pDBConnection.Show();
-                //    this.pDBData.Hide();
-                //});
-
-                /*
-                 * Check if key is alrady in connection strings dicionary...
-                 */
-                if (this.settings.SqlConnectionStrings.ContainsKey(this.sql.ConnectionString.Server))
-                {
-                    /*
-                     * ... if so, then remove it, because it is not working correctly
-                     */
-                    this.settings.SqlConnectionStrings.Remove(this.sql.ConnectionString.Server);
-                }
-
-                MessageBox.Show("Wystapił błąd podczas połączenia z bazą.", "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Wystapił błąd podczas połączenia z bazą.", "Problem podczas połączenia z bazą", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
-        private void sql_DisconnectionEvent(object sender, SQLConnectionEventArgs args)
-        {
-            this.cbDatabases.InvokeIfRequired(() =>
-                {
-                    this.cbDatabases.Items.Clear();
-                    this.cbDatabases.Text = "";
-                    //TODO: ...
-                });
-        }
+        //private void sql_DisconnectionEvent(object sender, SQLConnectionEventArgs args)
+        //{
+        //    this.cbDatabases.InvokeIfRequired(() =>
+        //        {
+        //            this.cbDatabases.Items.Clear();
+        //            this.cbDatabases.Text = "";
+        //            //TODO: ...
+        //        });
+        //}
 
         private void sql_DatabasesHasBeenFetched(object sender, EventArgs args)
         {
             this.cbDatabases.InvokeIfRequired(() =>
                 {
                     this.pbDatabasesLoader.Hide();
+                    this.lDatabase.Enabled = true;
+                    this.bSaveConnection.Enabled = true;
                     this.cbDatabases.Enabled = true;
                     this.cbDatabases.Items.AddRange(((SQLConnectionHelper)sender).Databases.ToArray());
                     this.cbDatabases.Text = ((SQLConnectionHelper)sender).DefaultDatabase;
                 });
+
+            this.sql.Disconnect();
         }
 
         private void cbServerNames_SelectedIndexChanged(object sender, EventArgs e)
         {
-            String sqlConnString;
+            //String sqlConnString;
 
             if (this.sql.IsConnected)
-                this.sql.Dissconnect();
+                this.sql.Disconnect();
 
 
-            //UNDO//if (this.settings.SqlConnectionStrings.TryGetValue(this.cbServerNames.Text, out sqlConnString))
-            //UNDO//{
-            //UNDO//    /*
-            //UNDO//     * If settings for this connetion string are known then try to make shortcut
-            //UNDO//     */
-            //UNDO//    this.pDBData.Show();
-            //UNDO//    this.pDBConnection.Hide();
+            //if (this.settings.SqlConnectionStrings.TryGetValue(this.cbServerNames.Text, out sqlConnString))
+            //{
+            //    /*
+            //     * If settings for this connetion string are known then try to make shortcut
+            //     */
+            //    this.sql.ConnectionString.ConnectionString = sqlConnString;
 
-            //UNDO//this.sql.ConnectionString.ConnectionString = sqlConnString;
+            //    this.bSQLConnect.Enabled = false;
+            //    this.pbConnecting.Show();
 
+            //    this.sql.StartConnect();
+            //}
+            //else
+            //{
+                /*
+                 * If settings for this connection string are not know then go in the normal way
+                 */
+                this.sql.ConnectionString.Server = this.cbServerNames.Text;
+                //this.settings.Save();
+            //}
 
-
-
-
-
-            ///////////////this.statusBarLabel.Text = "Próba połączenia z bazą...";
-
-            //this.pbDatabasesLoader.Show();
-            //this.cbDatabases.Items.Clear();
-            //this.cbDatabases.Enabled = false;
-
-            //this.mssql.StartScanDatabases();
-
-            //UNDO//this.bSQLConnect.Enabled = false;
-            //UNDO//this.pbConnecting.Show();
-
-            this.sql.StartConnect();
-            //UNDO//}
-            //UNDO//else
-            //UNDO//{
-            /*
-             * If settings for this connection string are not know then go in the normal way
-             */
-            //UNDO//this.pDBConnection.Show();
-            //UNDO//this.pDBData.Hide();
-
-            //UNDO//this.sql.ConnectionString.Server = this.cbServerNames.Text;
-            //this.settings.Save();
-            //UNDO//}
+                this.cbDatabases.Items.Clear();
+                this.cbDatabases.Enabled = false;
+                this.lDatabase.Enabled = false;
+                this.bSaveConnection.Enabled = false;
         }
 
         private void rbAuthSQLServer_CheckedChanged(object sender, EventArgs e)
@@ -215,7 +160,7 @@ namespace ITSharp.ScheDEX
             this.tbSQLUserPass.Enabled = true;
 
             this.sql.ConnectionString.Authentication = false;
-            this.settings.Save();
+            //this.settings.Save();
         }
 
         private void rbAuthWindows_CheckedChanged(object sender, EventArgs e)
@@ -226,7 +171,7 @@ namespace ITSharp.ScheDEX
             this.tbSQLUserPass.Enabled = false;
 
             this.sql.ConnectionString.Authentication = true;
-            this.settings.Save();
+            //this.settings.Save();
         }
 
         private void bSQLConnect_Click(object sender, EventArgs e)
@@ -242,37 +187,21 @@ namespace ITSharp.ScheDEX
                 this.sql.ConnectionString.UserID = this.tbSQLUserName.Text;
                 this.sql.ConnectionString.Password = this.tbSQLUserPass.Text;
             }
-
-            //////////////////////this.statusBarLabel.Text = "Próba połączenia z bazą...";
-            //this.pbDatabasesLoader.Show();
-            //this.cbDatabases.Items.Clear();
-            //this.cbDatabases.Enabled = false;
-
-            //this.mssql.StartScanDatabases();
-
+                        
+            this.cbDatabases.Items.Clear();
+            this.cbDatabases.Enabled = false;
+            this.lDatabase.Enabled = false;
             this.bSQLConnect.Enabled = false;
             this.pbConnecting.Show();
 
             this.sql.StartConnect();
+            
         }
-
 
         private void cbDatabases_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //this.lbTables.Items.Clear();
-            this.sql.Connection.ChangeDatabase(this.cbDatabases.Text);
+            //this.sql.Connection.ChangeDatabase(this.cbDatabases.Text);
             this.sql.ConnectionString.Database = this.cbDatabases.Text;
-            //this.sql.StartScanTables();
-        }
-
-        public FormMain ContainerForm
-        {
-            set
-            {
-                this.container = value;
-                this.settings = value.settings;
-                value.sql = this.sql;
-            }
         }
 
         public SQLConnectionHelper Sql
@@ -281,6 +210,93 @@ namespace ITSharp.ScheDEX
             {
                 return this.sql;
             }
+        }
+
+        private void bSaveConnection_Click(object sender, EventArgs e)
+        {
+            this.sql.Connect();
+                        
+            foreach (var pair in this.sql.Queries)
+            {
+                SqlCommand SqlCom = new SqlCommand();
+                SqlCom.Connection = this.sql.Connection;
+                SqlCom.CommandType = CommandType.Text;
+
+                SqlCom.CommandText = pair.Value;
+
+                SqlDataReader SqlDR = null;
+                try
+                {
+                    SqlDR = SqlCom.ExecuteReader();
+                }
+                catch (Exception ex)
+                {
+                    //this.sql.Connection.Close();
+                    //MessageBox.Show(ex.Message);
+                    MessageBox.Show("Wybrana baza danych nie pozwala na odczyt wymaganych danych", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    return;
+                }
+                finally
+                {
+                    SqlCom.Dispose();
+                    if(SqlDR != null)
+                        SqlDR.Dispose();
+                }
+            }
+
+            this.sql.Disconnect();
+
+            string sqlConnKey = String.Format(
+                "{0} - {1}", 
+                this.sql.ConnectionString.Server, 
+                this.sql.ConnectionString.Database
+                );
+
+            /*
+             * Check if key is already in connection strings dicionary...
+             */
+            if (this.settings.SqlConnectionStrings.ContainsKey(sqlConnKey))
+            {
+                /*
+                 * ... if so, then update it
+                 */
+                this.settings.SqlConnectionStrings[sqlConnKey] =
+                    this.sql.ConnectionString.ConnectionString;
+            }
+            else
+            {
+                /*
+                 * ... if not, then create it
+                 */
+                this.settings.SqlConnectionStrings.Add(
+                    sqlConnKey,
+                    this.sql.ConnectionString.ConnectionString
+                    );
+
+                this.cbAvailableDBs.Items.Add(sqlConnKey);
+            }
+
+            MessageBox.Show("Połączenie zostało zapisane.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+            this.settings.Save();
+        }
+
+        private void bRemoveDBConn_Click(object sender, EventArgs e)
+        {
+            if (this.cbAvailableDBs.Text.Equals(""))
+            {
+                MessageBox.Show("Trzeba wybrać połącznie, aby je skasować.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            this.settings.SqlConnectionStrings.Remove(this.cbAvailableDBs.Text);
+            this.cbAvailableDBs.Items.Remove(this.cbAvailableDBs.Text);
+        }
+
+        private void SqlPanel_Load(object sender, EventArgs e)
+        {
+            foreach(var pair in this.settings.SqlConnectionStrings)
+                this.cbAvailableDBs.Items.Add(pair.Key);
         }
     }
 }

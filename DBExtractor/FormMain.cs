@@ -20,8 +20,15 @@ namespace ITSharp.ScheDEX
 {
     public partial class FormMain : Form
     {
+        System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+            
         private static readonly Font RegularFont = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
         private static readonly Font BoldFont = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+
+        private EventsPanel eventsP;
+        private FtpPanel ftpP;
+        private ServicePanel serviceP;
+        private SqlPanel sqlP;
 
         private static readonly string WorkingDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ScheDEX");
         private static readonly string SettingsFilePath = Path.Combine(WorkingDirectory, "settings.bin");
@@ -37,19 +44,12 @@ namespace ITSharp.ScheDEX
 
         public FormMain()
         {
-            InitializeComponent();
-            InitializeMyComponent();
-            this.Closing += new CancelEventHandler(this.FormMain_Closing);
-        }
-
-        private void InitializeMyComponent()
-        {
             /*
              * Create working directory if not exists
              */
             if (!Directory.Exists(WorkingDirectory))
                 Directory.CreateDirectory(WorkingDirectory);
-            
+
             /*
              * Loading settings from file if available
              */
@@ -57,32 +57,89 @@ namespace ITSharp.ScheDEX
             this.events = ScheduleEventList.Load(EventsFilePath);
 
             /*
-             * Initialize events related issues
-             */
-            this.eventsP.ContainerForm = this;
-            
-            /*
-             * Initialize SQL connection related issues
-             */
-            this.sqlP.ContainerForm = this;
-            this.sql.ConnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_ConnectionEvent);
-            this.sql.DisconnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_DisconnectionEvent);
-            this.sql.ServerNamesHasBeenFetched += new EventHandler(sql_ServerNamesHasBeenFetched);
-            
-            /*
-             * Initialize FTP related issues
-             */
-            this.ftpP.ContainerForm = this;
-            
-            /*
-             * Service controler related issues
-             */
-            this.serviceP.ContainerForm = this;
-            this.service.FindingEvent += new EventHandler<ServiceEventArgs>(service_FindingEvent);
-            /*
              * Store settings
              */
             //this.settings.Save();
+
+            InitializeComponent();
+            InitializeMyComponent();
+            this.Closing += new CancelEventHandler(this.FormMain_Closing);
+        }
+
+        private void InitializeMyComponent()
+        {
+            this.eventsP = new ITSharp.ScheDEX.EventsPanel(this);
+            this.sqlP = new ITSharp.ScheDEX.SqlPanel(this);
+            this.ftpP = new ITSharp.ScheDEX.FtpPanel(this);
+            this.serviceP = new ITSharp.ScheDEX.ServicePanel(this);
+
+            // 
+            // eventsP
+            // 
+            this.eventsP.BackColor = System.Drawing.Color.White;
+            this.eventsP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.eventsP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.eventsP.Location = new System.Drawing.Point(0, 0);
+            this.eventsP.Name = "eventsP";
+            this.eventsP.Size = new System.Drawing.Size(485, 519);
+            this.eventsP.TabIndex = 3;
+            // 
+            // sqlP
+            // 
+            this.sqlP.BackColor = System.Drawing.Color.White;
+            this.sqlP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.sqlP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.sqlP.Location = new System.Drawing.Point(0, 0);
+            this.sqlP.Name = "sqlP";
+            this.sqlP.Size = new System.Drawing.Size(485, 519);
+            this.sqlP.TabIndex = 6;
+            // 
+            // ftpP
+            // 
+            this.ftpP.BackColor = System.Drawing.Color.White;
+            this.ftpP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ftpP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.ftpP.Location = new System.Drawing.Point(0, 0);
+            this.ftpP.Name = "ftpP";
+            this.ftpP.Size = new System.Drawing.Size(485, 519);
+            this.ftpP.TabIndex = 4;
+            // 
+            // serviceP
+            // 
+            this.serviceP.BackColor = System.Drawing.Color.White;
+            this.serviceP.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.serviceP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.serviceP.Location = new System.Drawing.Point(0, 0);
+            this.serviceP.Name = "serviceP";
+            this.serviceP.Size = new System.Drawing.Size(485, 519);
+            this.serviceP.TabIndex = 5;
+
+            this.splitContainer.Panel2.Controls.Add(this.eventsP);
+            this.splitContainer.Panel2.Controls.Add(this.sqlP);
+            this.splitContainer.Panel2.Controls.Add(this.ftpP);
+            this.splitContainer.Panel2.Controls.Add(this.serviceP);
+
+            /*
+             * Initialize events related issues
+             */
+
+
+            /*
+             * Initialize SQL connection related issues
+             */
+            //this.sql.ConnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_ConnectionEvent);
+            //this.sql.DisconnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_DisconnectionEvent);
+            //this.sql.ServerNamesHasBeenFetched += new EventHandler(sql_ServerNamesHasBeenFetched);
+
+            /*
+             * Initialize FTP related issues
+             */
+
+
+            /*
+             * Service controler related issues
+             */
+            this.service.ServiceStatusChangedEvent += new EventHandler<ServiceStatusEventArgs>(service_ServiceStatusEventArgs);
 
             /*
              * Handle switching of UserControls
@@ -114,66 +171,43 @@ namespace ITSharp.ScheDEX
             // Events
             //UNDO//this.lbScheduleEvents.Items.AddRange(this.events.ToArray());
         }
-        
+
         public void ProcessScan()
         {
-            this.statusBarLabel.Text = "Szukam instancji MSSQL...";
-            
+            //this.statusBarLabel.Text = "Szukam instancji MSSQL...";
+
             this.sqlP.ProcessScan();
         }
 
-        private void service_FindingEvent(object sender, ServiceEventArgs args)
+        private void service_ServiceStatusEventArgs(object sender, ServiceStatusEventArgs args)
         {
-            if (args.IsSuccess)
+            if (args.IsWorking)
             {
-                //this.notifyIcon1.InvokeIfRequired(() =>
-                //{
-                    this.notifyIcon1.Text += "\nUsługa pracuje prawidłowo.";
-                //});
+                this.notifyIcon1.Text = "ScheDEX\nUsługa pracuje prawidłowo.";
+                //this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("28461-ico-alarm-clock-icon.ico")));
             }
             else
             {
-                //this.notifyIcon1.InvokeIfRequired(() =>
-                //{
-                    this.notifyIcon1.Text += "\nUsługa nie pracuje.";
-                //});
+                this.notifyIcon1.Text = "ScheDEX\nUsługa nie pracuje.";
+                //this.notifyIcon1.Icon = global::ScheDEX.Properties.Resources.
             }
         }
 
-        private void sql_ServerNamesHasBeenFetched(object sender, EventArgs args)
-        {
-            //this.statusBarLabel.InvokeIfRequired(() =>
-            //{
-                this.statusBarLabel.Text = "";
-            //});
-        }
+        //private void sql_ServerNamesHasBeenFetched(object sender, EventArgs args)
+        //{
+        //    //this.statusBarLabel.InvokeIfRequired(() =>
+        //    //{
+        //        this.statusBarLabel.Text = "";
+        //    //});
+        //}
 
-        private void sql_ConnectionEvent(object sender, SQLConnectionEventArgs args)
-        {
-            //this.statusBarLabel.InvokeIfRequired(() =>
-            //{
-                this.statusBarLabel.Text = "";
-            //});
-        }
-
-        private void sql_DisconnectionEvent(object sender, SQLConnectionEventArgs args)
-        {
-            //this.statusBarLabel.InvokeIfRequired(() =>
-            //{
-                this.statusBarLabel.Text = "";
-            //});
-        }
-
-
-
-
-
-
-
-
-
-
-
+        //private void sql_ConnectionEvent(object sender, SQLConnectionEventArgs args)
+        //{
+        //    //this.statusBarLabel.InvokeIfRequired(() =>
+        //    //{
+        //        this.statusBarLabel.Text = "";
+        //    //});
+        //}
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -192,146 +226,25 @@ namespace ITSharp.ScheDEX
             this.Show();
         }
 
+        //private void buttonSave_Click(object sender, EventArgs e)
+        //{
+        //    this.settings.Save();
+        //    Console.WriteLine("Serialzuje obiekt do pliku");
 
+        //    //this.notifyIcon1.BalloonTipText = "hello";
+        //    this.notifyIcon1.ShowBalloonTip(3000, "Title1", "Text", ToolTipIcon.Info);
 
-        private void buttonSave_Click(object sender, EventArgs e)
-        {
-            this.settings.Save();
-            Console.WriteLine("Serialzuje obiekt do pliku");
+        //    System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+        //    this.notifyIcon1.Icon = ((System.Drawing.Icon)resources.GetObject("alarmClock.Icon"));
 
-            //this.notifyIcon1.BalloonTipText = "hello";
-            this.notifyIcon1.ShowBalloonTip(3000, "Title1", "Text", ToolTipIcon.Info);
-
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            this.notifyIcon1.Icon = ((System.Drawing.Icon)resources.GetObject("alarmClock.Icon"));
-
-            //this.pictureBox1.Hide();
-        }
-
-
-
-
-
-        private void tbInterval_TextChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                //UNDO//this.settings.Interval = uint.Parse(this.tbInterval.Text);
-                this.settings.Save();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Należy podać cyfry.\n" + ex.Message, "Błąd", MessageBoxButtons.OK, MessageBoxIcon.Hand);
-            }
-        }
-
-        private void bSaveScheduleEvent_Click(object sender, EventArgs e)
-        {
-            // TODO: check if all data are available and valid
-            ScheduleEvent schEv = new ScheduleEvent();
-
-            // SQL
-            if (!this.sql.ConnectionString.ConnectionString.Equals("")) // check if is connected ???
-                schEv.SQLConnectionString = this.sql.ConnectionString.ConnectionString;
-
-            //UNDO//if (this.lbTables.SelectedIndex >= 0)
-            //UNDO//    schEv.SQLTable = this.lbTables.SelectedItem.ToString();
-
-            // FTP
-            //UNDO//if (!this.tbFTPAdress.Text.Equals(""))
-            //UNDO//    schEv.FTPAddress = this.tbFTPAdress.Text;
-
-            //UNDO//if (!this.tbFTPUserName.Text.Equals(""))
-            //UNDO//    schEv.FTPLogin = this.tbFTPUserName.Text;
-
-            //UNDO//if (!this.tbFTPUserPass.Text.Equals(""))
-            //UNDO//    schEv.FTPPassword = this.tbFTPUserPass.Text;
-
-            //UNDO//if (!this.tbFTPRemotePath.Text.Equals(""))
-            //UNDO//    schEv.FTPRemotePath = this.tbFTPRemotePath.Text;
-
-            //if(this.ftp.IsValid)
-
-            //UNDO//schEv.Interval = uint.Parse(this.tbInterval.Text);
-
-            //UNDO//schEv.XMLFileName = this.tbXMLFileName.Text;
-
-            /*
-             * Check if any schedule event is ...
-             */
-            //UNDO//if (this.lbScheduleEvents.SelectedIndex < 0)
-            //UNDO//{
-                /*
-                 * ... not selected, then create new one
-                 */
-            //UNDO//    lbScheduleEvents.Items.Add(schEv);
-            //UNDO//    this.events.Add(schEv);
-            //UNDO//    this.events.Save();
-            //UNDO//}
-            //UNDO//else
-            //UNDO//{
-                /*
-                 * ... slected then, update it
-                 */
-            //UNDO//    int index = lbScheduleEvents.SelectedIndex;
-            //UNDO//    lbScheduleEvents.Items[index] = schEv;
-            //UNDO//    this.events[index] = schEv;
-            //UNDO//    this.events.Save();
-            //UNDO//}
-
-            
-            Console.WriteLine(schEv.ToString());
-        }
-
-        private void lbScheduleEvents_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            //UNDO//if (this.lbScheduleEvents.SelectedIndex < 0)
-            //UNDO//    return;
-
-            //UNDO//ScheduleEvent schedEvent = (ScheduleEvent)this.lbScheduleEvents.SelectedItem;
-            //UNDO//SQLConnectionString sqlConnString = new SQLConnectionString();
-            //UNDO//sqlConnString.ConnectionString = schedEvent.SQLConnectionString;
-            //UNDO//if (this.cbServerNames.Items.Contains(sqlConnString.Server))
-            //UNDO//{
-            //UNDO//    this.cbServerNames.Text = sqlConnString.Server;
-            //UNDO//}
-            //UNDO//else
-            //UNDO//{
-                DialogResult result = MessageBox.Show(
-                    "Nie ma takiej bazy na liście.\n\nCzy chcesz usnąć to zdarzenie z listy?",
-                    "Ostrzeżenie",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                    );
-
-                if (result == DialogResult.Yes)
-                {
-                    //UNDO//object toDelete = lbScheduleEvents.SelectedItem;
-                    //UNDO//lbScheduleEvents.Items.Remove(toDelete);
-                    //UNDO//this.events.Remove(toDelete);
-                    this.events.Save();
-                }
-            //UNDO//}
-        }
-
-        private void lbScheduleEvents_Leave(object sender, EventArgs e)
-        {
-            //MessageBox.Show("Leaved");
-        }
-
-        private void bRemoveScheduleEvent_Click(object sender, EventArgs e)
-        {
-            //UNDO//object toDelete = lbScheduleEvents.SelectedItem;
-            //UNDO//this.events.Remove(toDelete);
-            //UNDO//lbScheduleEvents.Items.Remove(toDelete);
-            this.events.Save();
-        }
+        //    //this.pictureBox1.Hide();
+        //}
 
         private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             String key = ((LinkLabel)sender).Name;
-            
-            foreach(var pair in this.userPanels)
+
+            foreach (var pair in this.userPanels)
             {
                 ((LinkLabel)this.panelLinks.Controls[pair.Key]).Font = RegularFont;
 

@@ -26,6 +26,48 @@ namespace ITSharp.ScheDEX.Common
         private ArrayList databases;
         private String defaultDatabase;
         private ArrayList tables;
+        private Dictionary<String, String> queries;
+
+        private string query1 = @"SELECT
+	[Magazyny].[mag_kod] AS [Magazyn],
+	[Oferta].[ofr_symbol] AS [Symbol],
+	[Oferta].[ofr_nazwa] AS [Nazwa],
+	[Oferta].[ofr_ilosc] AS [Stan magazynowy],
+	--[Ilość do dyspozycji]
+	[Jednostki].[jdn_kod] AS [Jm],
+	--
+	[Oferta].[ofr_waga] AS [Waga]
+FROM 
+	[Oferta]
+INNER JOIN
+	[Magazyny] ON [Oferta].[ofr_magazyn] = [Magazyny].[mag_id]
+INNER JOIN
+	[Jednostki] ON [Oferta].[ofr_jednostka] = [Jednostki].[jdn_id];";
+
+        private string query2 = @"SELECT * FROM [Oferta];";
+
+
+
+//        SELECT [Oferta].*,
+//    [Magazyny].[mag_kod] AS [Magazyn],               
+//    [Oferta].[ofr_symbol] AS [Symbol],
+//    [Oferta].[ofr_nazwa] AS [Nazwa],
+//    [Oferta].[ofr_ilosc] AS [Stan magazynowy],
+//    [Oferta].[ofr_ilosc]-[Oferta].[ofr_rezerwacje] AS [Ilość do dyspozycji],
+//    [Jednostki].[jdn_kod] AS [Jm],
+//    --
+//    [Oferta].[ofr_waga] AS [Waga]
+//FROM 
+//    [Oferta]
+//INNER JOIN
+//    [Magazyny] ON [Oferta].[ofr_magazyn] = [Magazyny].[mag_id]
+//INNER JOIN
+//    [Jednostki] ON [Oferta].[ofr_jednostka] = [Jednostki].[jdn_id]
+
+//WHERE
+//    [Oferta].[ofr_symbol] = '00037097';
+
+
 
         public SQLConnectionHelper()
         {
@@ -36,6 +78,10 @@ namespace ITSharp.ScheDEX.Common
             this.sqlConnection = null;
             this.databases = new ArrayList();
             this.tables = new ArrayList();
+
+            this.queries = new Dictionary<String, String>();
+            this.queries.Add("Kartoteki", query1);
+            this.queries.Add("Dane klientów", query2);
         }
 
         public void StartScanServerNames()
@@ -79,12 +125,19 @@ namespace ITSharp.ScheDEX.Common
 
         public void StartConnect()
         {
-            Thread thread = new Thread(new ThreadStart(Connect));
+            Thread thread = new Thread(new ThreadStart(ConnectByThread));
             thread.Name = "Connect";
             thread.Start();
         }
 
-        private void Connect()
+        public void Connect()
+        {
+            this.sqlConnection = new SqlConnection(this.sqlConnectionStr.ConnectionString);
+            this.sqlConnection.Open();
+            this.isConnected = true;
+        }
+
+        private void ConnectByThread()
         {
             try
             {
@@ -101,7 +154,7 @@ namespace ITSharp.ScheDEX.Common
             }
         }
 
-        public void Dissconnect()
+        public void Disconnect()
         {
             if (this.isConnected)
             {
@@ -191,6 +244,11 @@ namespace ITSharp.ScheDEX.Common
         {
             get { return this.tables; }
             set { this.tables = value; }
+        }
+
+        public Dictionary<String, String> Queries
+        {
+            get { return this.queries; }
         }
 
         public SQLConnectionString ConnectionString

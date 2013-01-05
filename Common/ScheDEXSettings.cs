@@ -71,6 +71,20 @@ namespace ITSharp.ScheDEX.Common
             set { this.sqlConnectionStrings = value; }
         }
 
+        private String sql_ConnectionKey;
+        public String SqlConnectionKey
+        {
+            get { return this.sql_ConnectionKey; }
+            set { this.sql_ConnectionKey = value; }
+        }
+
+        private String sql_QueryName;
+        public String SqlQueryName
+        {
+            get { return this.sql_QueryName; }
+            set { this.sql_QueryName = value; }
+        }
+
         private String ftp_Address;
         public String FtpAddress
         {
@@ -104,6 +118,13 @@ namespace ITSharp.ScheDEX.Common
         {
             get { return this.interval; }
             set { this.interval = value; }
+        }
+
+        private String xml_FileName;
+        public String XmlFileName
+        {
+            get { return this.xml_FileName; }
+            set { this.xml_FileName = value; }
         }
     }
 }

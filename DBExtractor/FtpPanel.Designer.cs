@@ -49,7 +49,7 @@
             // pbFTPConnectTest
             // 
             this.pbFTPConnectTest.Image = global::ScheDEX.Properties.Resources.loader1;
-            this.pbFTPConnectTest.Location = new System.Drawing.Point(114, 123);
+            this.pbFTPConnectTest.Location = new System.Drawing.Point(75, 134);
             this.pbFTPConnectTest.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.pbFTPConnectTest.Name = "pbFTPConnectTest";
             this.pbFTPConnectTest.Size = new System.Drawing.Size(19, 18);
@@ -61,7 +61,7 @@
             // lFTPRemotePath
             // 
             this.lFTPRemotePath.AutoSize = true;
-            this.lFTPRemotePath.Location = new System.Drawing.Point(25, 175);
+            this.lFTPRemotePath.Location = new System.Drawing.Point(23, 170);
             this.lFTPRemotePath.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lFTPRemotePath.Name = "lFTPRemotePath";
             this.lFTPRemotePath.Size = new System.Drawing.Size(123, 15);
@@ -71,7 +71,7 @@
             // lFTPUserPass
             // 
             this.lFTPUserPass.AutoSize = true;
-            this.lFTPUserPass.Location = new System.Drawing.Point(26, 142);
+            this.lFTPUserPass.Location = new System.Drawing.Point(23, 138);
             this.lFTPUserPass.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lFTPUserPass.Name = "lFTPUserPass";
             this.lFTPUserPass.Size = new System.Drawing.Size(111, 15);
@@ -81,7 +81,7 @@
             // lFTPUserName
             // 
             this.lFTPUserName.AutoSize = true;
-            this.lFTPUserName.Location = new System.Drawing.Point(26, 110);
+            this.lFTPUserName.Location = new System.Drawing.Point(23, 106);
             this.lFTPUserName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lFTPUserName.Name = "lFTPUserName";
             this.lFTPUserName.Size = new System.Drawing.Size(117, 15);
@@ -91,7 +91,7 @@
             // lFTPAddress
             // 
             this.lFTPAddress.AutoSize = true;
-            this.lFTPAddress.Location = new System.Drawing.Point(26, 78);
+            this.lFTPAddress.Location = new System.Drawing.Point(23, 73);
             this.lFTPAddress.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lFTPAddress.Name = "lFTPAddress";
             this.lFTPAddress.Size = new System.Drawing.Size(88, 15);
@@ -100,19 +100,19 @@
             // 
             // bFTPConnectTest
             // 
-            this.bFTPConnectTest.Location = new System.Drawing.Point(108, 119);
+            this.bFTPConnectTest.Location = new System.Drawing.Point(71, 128);
             this.bFTPConnectTest.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bFTPConnectTest.Name = "bFTPConnectTest";
-            this.bFTPConnectTest.Size = new System.Drawing.Size(205, 28);
+            this.bFTPConnectTest.Size = new System.Drawing.Size(250, 28);
             this.bFTPConnectTest.TabIndex = 12;
-            this.bFTPConnectTest.Text = "Przetestuj połączenie FTP";
+            this.bFTPConnectTest.Text = "Przetestuj połączenie FTP i zapisz";
             this.bFTPConnectTest.UseVisualStyleBackColor = true;
             this.bFTPConnectTest.Click += new System.EventHandler(this.bFTPConnectTest_Click);
             // 
             // tbFTPRemotePath
             // 
             this.tbFTPRemotePath.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbFTPRemotePath.Location = new System.Drawing.Point(160, 173);
+            this.tbFTPRemotePath.Location = new System.Drawing.Point(160, 168);
             this.tbFTPRemotePath.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPRemotePath.Name = "tbFTPRemotePath";
             this.tbFTPRemotePath.Size = new System.Drawing.Size(295, 21);
@@ -121,7 +121,7 @@
             // tbFTPUserPass
             // 
             this.tbFTPUserPass.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbFTPUserPass.Location = new System.Drawing.Point(160, 141);
+            this.tbFTPUserPass.Location = new System.Drawing.Point(160, 136);
             this.tbFTPUserPass.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPUserPass.Name = "tbFTPUserPass";
             this.tbFTPUserPass.PasswordChar = '•';
@@ -131,7 +131,7 @@
             // tbFTPUserName
             // 
             this.tbFTPUserName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbFTPUserName.Location = new System.Drawing.Point(160, 109);
+            this.tbFTPUserName.Location = new System.Drawing.Point(160, 104);
             this.tbFTPUserName.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPUserName.Name = "tbFTPUserName";
             this.tbFTPUserName.Size = new System.Drawing.Size(295, 21);
@@ -140,7 +140,7 @@
             // tbFTPAdress
             // 
             this.tbFTPAdress.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbFTPAdress.Location = new System.Drawing.Point(160, 76);
+            this.tbFTPAdress.Location = new System.Drawing.Point(160, 71);
             this.tbFTPAdress.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPAdress.Name = "tbFTPAdress";
             this.tbFTPAdress.Size = new System.Drawing.Size(295, 21);
@@ -194,7 +194,6 @@
             this.Name = "FtpPanel";
             this.Padding = new System.Windows.Forms.Padding(5);
             this.Size = new System.Drawing.Size(542, 494);
-            this.Load += new System.EventHandler(this.FtpPanel_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbFTPConnectTest)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);

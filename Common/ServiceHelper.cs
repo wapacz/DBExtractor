@@ -10,15 +10,16 @@ namespace ITSharp.ScheDEX.Common
     public class ServiceHelper
     {
         public event EventHandler<ServiceStatusEventArgs> ServiceStatusChangedEvent;
-        public event EventHandler<ServiceEventArgs> FindingEvent;
-
+        
         private string serviceName;
         private ServiceController service;
         private bool isFound;
         private ServiceControllerStatus previousStatus;
+        private Boolean forever;
 
         public ServiceHelper()
         {
+            this.forever = true;
             this.isFound = false;
         }
 
@@ -27,6 +28,11 @@ namespace ITSharp.ScheDEX.Common
             this.serviceName = serviceName;
             this.isFound = false;
             this.service = this.Find(serviceName);
+        }
+
+        public void Dispose()
+        {
+            this.forever = false;
         }
 
         private enum Commands 
@@ -52,13 +58,9 @@ namespace ITSharp.ScheDEX.Common
                     this.serviceName = serviceName;
                     this.service = service;
                     this.previousStatus = this.service.Status;
-                    if (FindingEvent != null)
-                        FindingEvent(service, ServiceEventArgs.Success);
+
                     return service;
                 }
-
-            if (FindingEvent != null)
-                FindingEvent(this, ServiceEventArgs.Fail);
 
             throw new ServiceNotFoundException();
         }
@@ -77,11 +79,12 @@ namespace ITSharp.ScheDEX.Common
             if (ServiceStatusChangedEvent != null)
             {
                 args.Status = this.service.Status;
+                args.IsWorking = this.ServiceStatusToBoolean;
                 ServiceStatusChangedEvent(this.service, args);
             }
             this.previousStatus = this.service.Status;
 
-            while (true)
+            while (this.forever)
             {
                 this.service.Refresh();
                 if (this.service.Status != this.previousStatus)
@@ -89,6 +92,7 @@ namespace ITSharp.ScheDEX.Common
                     if (ServiceStatusChangedEvent != null)
                     {
                         args.Status = this.service.Status;
+                        args.IsWorking = this.ServiceStatusToBoolean;
                         ServiceStatusChangedEvent(this.service, args);
                     }
                     this.previousStatus = this.service.Status;
@@ -97,9 +101,30 @@ namespace ITSharp.ScheDEX.Common
             }
         }
 
+        private Boolean ServiceStatusToBoolean
+        {
+            get
+            {
+                switch (this.service.Status)
+                {
+                    case ServiceControllerStatus.Running:
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+        }
+
         public void ExecuteCommand(int command)
         {
-            this.service.ExecuteCommand(command);
+            try
+            {
+                this.service.ExecuteCommand(command);
+            }
+            catch (Exception)
+            {
+                // skip fault
+            }
         }
 
         public bool IsFound
@@ -123,35 +148,12 @@ namespace ITSharp.ScheDEX.Common
             get { return this.status; }
             set { this.status = value; }
         }
-    }
 
-    public class ServiceEventArgs : EventArgs
-    {
-        private Boolean isSuccess;
-        public Boolean IsSuccess
+        private Boolean is_working;
+        public Boolean IsWorking
         {
-            get { return this.isSuccess; }
-            set { this.isSuccess = value; }
-        }
-
-        public static ServiceEventArgs Success
-        {
-            get
-            {
-                ServiceEventArgs args = new ServiceEventArgs();
-                args.IsSuccess = true;
-                return args;
-            }
-        }
-
-        public static ServiceEventArgs Fail
-        {
-            get
-            {
-                ServiceEventArgs args = new ServiceEventArgs();
-                args.IsSuccess = false;
-                return args;
-            }
+            get { return this.is_working; }
+            set { this.is_working = value; }
         }
     }
 }

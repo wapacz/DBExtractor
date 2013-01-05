@@ -194,6 +194,8 @@ namespace ITSharp.ScheDEX
 
         protected void WorkerThread()
         {
+            string workingFile;
+
             LOG("Begin of WorkerThread");
 
             while (this.forever)
@@ -210,15 +212,13 @@ namespace ITSharp.ScheDEX
                     {
                         try
                         {
+                            workingFile = Path.Combine(WorkingDir + schedEvent.XMLFileName);
                             /*
                              * Connect with MSSQL server and use database from event
                              * and get the data for XML file
                              */
                             sqlConnection.Open();
-                            SqlDataAdapter dataAdapter = new SqlDataAdapter(
-                                @"select * from " + schedEvent.SQLTable,
-                                sqlConnection
-                                );
+                            SqlDataAdapter dataAdapter = new SqlDataAdapter(schedEvent.SQLQuery, sqlConnection);
                             DataTable dataTable = new DataTable();
                             dataAdapter.Fill(dataTable);
 
@@ -228,7 +228,7 @@ namespace ITSharp.ScheDEX
                             XmlWriterSettings xmlWS = new XmlWriterSettings();
                             xmlWS.Encoding = Encoding.UTF8;
 
-                            using (XmlWriter writer = XmlWriter.Create(WorkingDir + schedEvent.XMLFileName, xmlWS))
+                            using (XmlWriter writer = XmlWriter.Create(workingFile, xmlWS))
                             {
                                 /*
                                  * Fill header of XML file
@@ -345,7 +345,7 @@ namespace ITSharp.ScheDEX
                              * Send file to FTP server
                              */
                             FTPHelper.UploadFile(
-                                WorkingDir + schedEvent.XMLFileName,
+                                workingFile,
                                 "ftp://" + schedEvent.FTPAddress + "/" + schedEvent.XMLFileName + ".part",
                                 schedEvent.FTPLogin,
                                 schedEvent.FTPPassword
@@ -417,7 +417,8 @@ namespace ITSharp.ScheDEX
             this.attemptCounter = 0;
 
             this.sql_connectionString = schedEvent.SQLConnectionString;
-            this.sql_table = schedEvent.SQLTable;
+            this.sql_query = schedEvent.SQLQuery;
+            this.sql_query_name = schedEvent.SQLQueryName;
             this.ftp_address = schedEvent.FTPAddress;
             this.ftp_login = schedEvent.FTPLogin;
             this.ftp_password = schedEvent.FTPPassword;

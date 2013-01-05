@@ -13,77 +13,66 @@ namespace ITSharp.ScheDEX
 {
     public partial class ServicePanel : UserControl
     {
-        internal FormMain container;
+        private FormMain container;
         private ScheDEXSettings settings;
         internal ServiceHelper service;
 
-        public ServicePanel()
+        public ServicePanel(FormMain container)
         {
             InitializeComponent();
             this.Dock = DockStyle.Fill;
+
+            this.container = container;
+            this.settings = container.settings;
 
             /*
              * Initialize FTP helper
              */
             this.service = new ServiceHelper();
             this.service.ServiceStatusChangedEvent += new EventHandler<ServiceStatusEventArgs>(service_StatusChangedEvent);
-            this.service.FindingEvent += new EventHandler<ServiceEventArgs>(service_FindingEvent);
-
+            container.service = this.service;
         }
 
         private void ServicePanel_Load(object sender, EventArgs e)
         {
-            /*
-             * Fetching related service handler
-             */
-            this.service.Find("ScheDEX");
-            this.service.StartServiceWatcher();
+            try
+            {
+                /*
+                 * Fetching related service handler
+                 */
+                this.service.Find("ScheDEX");
+                this.service.StartServiceWatcher();
+            }
+            catch (ServiceNotFoundException)
+            {
+                this.lServiceStatus.Text = "Usługa nie pracuje prawidłowo.";
+                this.lServiceStatus2.Text = "Status: nie znaleziono usługi w systemie";
+            }
         }
 
         private void service_StatusChangedEvent(object sender, ServiceStatusEventArgs args)
         {
-            this.lServiceStatus2.InvokeIfRequired(() =>
-            {
-                this.lServiceStatus2.Text = "Status: " + args.Status.ToString();
-            });
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void service_FindingEvent(object sender, ServiceEventArgs args)
-        {
-            if (args.IsSuccess)
+            if (args.IsWorking)
             {
                 this.lServiceStatus.InvokeIfRequired(() =>
                 {
-                    this.lServiceStatus.Text = "Usługa pracuje prawidłowo.";
+                    this.lServiceStatus.Text = "Usługa pracuje prawidłowo";
+                    this.lServiceStatus2.Text = "Status: " + args.Status.ToString();
                 });
             }
             else
             {
                 this.lServiceStatus.InvokeIfRequired(() =>
                 {
-                    this.lServiceStatus.Text = "Usługa nie pracuje.";
+                    this.lServiceStatus.Text = "Usługa nie pracuje prawidłowo.";
+                    this.lServiceStatus2.Text = "Status: " + args.Status.ToString();
                 });
             }
         }
 
-        private void bRestartService_Click(object sender, EventArgs e)
+        private void bRefreshtService_Click(object sender, EventArgs e)
         {
             this.service.ExecuteCommand(250); // refresh data
-        }
-
-        public FormMain ContainerForm
-        {
-            set
-            {
-                this.container = value;
-                this.settings = value.settings; 
-                value.service = this.service;
-            }
         }
     }
 }

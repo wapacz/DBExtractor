@@ -11,7 +11,8 @@ namespace ITSharp.ScheDEX.Common
         public ScheduleEvent()
         {
             this.sql_connectionString = "";
-            this.sql_table = "";
+            this.sql_query = "";
+            this.sql_query_name = "";
             this.ftp_address = "";
             this.ftp_login = "";
             this.ftp_password = "";
@@ -27,11 +28,18 @@ namespace ITSharp.ScheDEX.Common
             set { this.sql_connectionString = value; }
         }
 
-        protected String sql_table;
-        public String SQLTable
+        protected String sql_query;
+        public String SQLQuery
         {
-            get { return this.sql_table; }
-            set { this.sql_table = value; }
+            get { return this.sql_query; }
+            set { this.sql_query = value; }
+        }
+
+        protected String sql_query_name;
+        public String SQLQueryName
+        {
+            get { return this.sql_query_name; }
+            set { this.sql_query_name = value; }
         }
 
         protected String ftp_address;
@@ -82,10 +90,10 @@ namespace ITSharp.ScheDEX.Common
             connString.ConnectionString = this.SQLConnectionString;
 
             String result = String.Format(
-                "[{0} - {1}] {2}, co {3} min. do pliku {4} na serwer {5}",
+                "{0} > {1} > {2}, [{3} min.], plik: {4}, FTP: {5}",
                 connString.Server,
                 connString.Database,
-                this.sql_table,
+                this.sql_query_name,
                 this.interval,
                 this.xml_fileName,
                 this.ftp_address

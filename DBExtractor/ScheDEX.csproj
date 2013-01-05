@@ -112,6 +112,7 @@
     <EmbeddedResource Include="SqlPanel.resx">
       <DependentUpon>SqlPanel.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -156,13 +157,16 @@
     <None Include="Resources\kservices-128x128.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\location-ftp-128x128.png" />
+    <EmbeddedResource Include="Resources\location-ftp-128x128.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\new-database-128x128.png" />
+    <EmbeddedResource Include="Resources\new-database-128x128.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\scheduled-tasks-3-128x128.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\26492-ico-alarm-clock-icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

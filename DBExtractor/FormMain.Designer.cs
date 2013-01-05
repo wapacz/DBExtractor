@@ -35,8 +35,6 @@
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusBar = new System.Windows.Forms.StatusStrip();
-            this.statusBarLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.pLeftSideImage = new System.Windows.Forms.Panel();
             this.panelLinks = new System.Windows.Forms.Panel();
@@ -44,23 +42,15 @@
             this.llSqlConfig = new System.Windows.Forms.LinkLabel();
             this.llServiceConfig = new System.Windows.Forms.LinkLabel();
             this.llFtpConfig = new System.Windows.Forms.LinkLabel();
-            this.eventsP = new ITSharp.ScheDEX.EventsPanel();
-            this.sqlP = new ITSharp.ScheDEX.SqlPanel();
-            this.ftpP = new ITSharp.ScheDEX.FtpPanel();
-            this.serviceP = new ITSharp.ScheDEX.ServicePanel();
             this.contextMenuStrip1.SuspendLayout();
-            this.statusBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
-            this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
             this.panelLinks.SuspendLayout();
             this.SuspendLayout();
             // 
             // notifyIcon1
             // 
-            this.notifyIcon1.BalloonTipText = "Hello";
-            this.notifyIcon1.BalloonTipTitle = "Title";
             this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
             this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
             this.notifyIcon1.Text = "ScheDEX";
@@ -94,24 +84,6 @@
             this.closeToolStripMenuItem.Text = "Zamknij";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
-            // statusBar
-            // 
-            this.statusBar.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusBarLabel});
-            this.statusBar.Location = new System.Drawing.Point(5, 526);
-            this.statusBar.Name = "statusBar";
-            this.statusBar.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusBar.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.statusBar.Size = new System.Drawing.Size(692, 22);
-            this.statusBar.TabIndex = 1;
-            this.statusBar.Text = "statusStrip1";
-            // 
-            // statusBarLabel
-            // 
-            this.statusBarLabel.Name = "statusBarLabel";
-            this.statusBarLabel.Size = new System.Drawing.Size(0, 17);
-            // 
             // splitContainer
             // 
             this.splitContainer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -125,14 +97,7 @@
             this.splitContainer.Panel1.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.splitContainer.Panel1.Controls.Add(this.pLeftSideImage);
             this.splitContainer.Panel1.Controls.Add(this.panelLinks);
-            // 
-            // splitContainer.Panel2
-            // 
-            this.splitContainer.Panel2.Controls.Add(this.eventsP);
-            this.splitContainer.Panel2.Controls.Add(this.sqlP);
-            this.splitContainer.Panel2.Controls.Add(this.ftpP);
-            this.splitContainer.Panel2.Controls.Add(this.serviceP);
-            this.splitContainer.Size = new System.Drawing.Size(692, 521);
+            this.splitContainer.Size = new System.Drawing.Size(739, 543);
             this.splitContainer.SplitterDistance = 200;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
@@ -142,7 +107,7 @@
             this.pLeftSideImage.BackgroundImage = global::ScheDEX.Properties.Resources.scheduled_tasks_3_128x128;
             this.pLeftSideImage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.pLeftSideImage.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pLeftSideImage.Location = new System.Drawing.Point(0, 345);
+            this.pLeftSideImage.Location = new System.Drawing.Point(0, 367);
             this.pLeftSideImage.Name = "pLeftSideImage";
             this.pLeftSideImage.Size = new System.Drawing.Size(198, 174);
             this.pLeftSideImage.TabIndex = 3;
@@ -183,10 +148,10 @@
             this.llSqlConfig.LinkColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.llSqlConfig.Location = new System.Drawing.Point(13, 43);
             this.llSqlConfig.Name = "llSqlConfig";
-            this.llSqlConfig.Size = new System.Drawing.Size(141, 15);
+            this.llSqlConfig.Size = new System.Drawing.Size(146, 15);
             this.llSqlConfig.TabIndex = 3;
             this.llSqlConfig.TabStop = true;
-            this.llSqlConfig.Text = "Konfiguracja baz danych";
+            this.llSqlConfig.Text = "Konfiguracja bazy danych";
             this.llSqlConfig.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
             // 
             // llServiceConfig
@@ -198,10 +163,10 @@
             this.llServiceConfig.LinkColor = System.Drawing.SystemColors.ActiveCaptionText;
             this.llServiceConfig.Location = new System.Drawing.Point(13, 96);
             this.llServiceConfig.Name = "llServiceConfig";
-            this.llServiceConfig.Size = new System.Drawing.Size(115, 15);
+            this.llServiceConfig.Size = new System.Drawing.Size(121, 15);
             this.llServiceConfig.TabIndex = 3;
             this.llServiceConfig.TabStop = true;
-            this.llServiceConfig.Text = "Zarządzanie usługą";
+            this.llServiceConfig.Text = "Informacje o usłudze";
             this.llServiceConfig.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
             // 
             // llFtpConfig
@@ -219,53 +184,12 @@
             this.llFtpConfig.Text = "Konfiguracja serwera FTP";
             this.llFtpConfig.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
             // 
-            // eventsP
-            // 
-            this.eventsP.BackColor = System.Drawing.Color.White;
-            this.eventsP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.eventsP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.eventsP.Location = new System.Drawing.Point(0, 0);
-            this.eventsP.Name = "eventsP";
-            this.eventsP.Size = new System.Drawing.Size(485, 519);
-            this.eventsP.TabIndex = 3;
-            // 
-            // sqlP
-            // 
-            this.sqlP.BackColor = System.Drawing.Color.White;
-            this.sqlP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.sqlP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.sqlP.Location = new System.Drawing.Point(0, 0);
-            this.sqlP.Name = "sqlP";
-            this.sqlP.Size = new System.Drawing.Size(485, 519);
-            this.sqlP.TabIndex = 6;
-            // 
-            // ftpP
-            // 
-            this.ftpP.BackColor = System.Drawing.Color.White;
-            this.ftpP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ftpP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.ftpP.Location = new System.Drawing.Point(0, 0);
-            this.ftpP.Name = "ftpP";
-            this.ftpP.Size = new System.Drawing.Size(485, 519);
-            this.ftpP.TabIndex = 4;
-            // 
-            // serviceP
-            // 
-            this.serviceP.BackColor = System.Drawing.Color.White;
-            this.serviceP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.serviceP.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.serviceP.Location = new System.Drawing.Point(0, 0);
-            this.serviceP.Name = "serviceP";
-            this.serviceP.Size = new System.Drawing.Size(485, 519);
-            this.serviceP.TabIndex = 5;
-            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(702, 553);
+            this.ClientSize = new System.Drawing.Size(749, 553);
             this.Controls.Add(this.splitContainer);
-            this.Controls.Add(this.statusBar);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -277,16 +201,12 @@
             this.Text = "ScheDEX";
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.contextMenuStrip1.ResumeLayout(false);
-            this.statusBar.ResumeLayout(false);
-            this.statusBar.PerformLayout();
             this.splitContainer.Panel1.ResumeLayout(false);
-            this.splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.panelLinks.ResumeLayout(false);
             this.panelLinks.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -297,13 +217,7 @@
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        private System.Windows.Forms.StatusStrip statusBar;
-        private System.Windows.Forms.ToolStripStatusLabel statusBarLabel;
         private System.Windows.Forms.SplitContainer splitContainer;
-        private EventsPanel eventsP;
-        private FtpPanel ftpP;
-        private ServicePanel serviceP;
-        private SqlPanel sqlP;
         private System.Windows.Forms.Panel pLeftSideImage;
         private System.Windows.Forms.Panel panelLinks;
         private System.Windows.Forms.LinkLabel llEventsConfig;

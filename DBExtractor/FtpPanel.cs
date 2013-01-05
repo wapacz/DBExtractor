@@ -13,24 +13,28 @@ namespace ITSharp.ScheDEX
 {
     public partial class FtpPanel : UserControl
     {
-        internal FormMain container;
+        private FormMain container;
         private ScheDEXSettings settings;
         internal FTPHelper ftp;
-        
-        public FtpPanel()
+
+        public FtpPanel(FormMain container)
         {
             InitializeComponent();
             this.Dock = DockStyle.Fill;
 
+            this.container = container;
+            this.settings = container.settings;
+            
             /*
              * Initialize FTP helper
              */
             this.ftp = new FTPHelper();
             this.ftp.ConnectionEvent += new EventHandler<FTPConnectionEventArgs>(ftp_ConnectionEvent);
-        }
-
-        private void FtpPanel_Load(object sender, EventArgs e)
-        {
+            container.ftp = this.ftp;
+            this.ftp.Address = this.settings.FtpAddress;
+            this.ftp.Login = this.settings.FtpUserName;
+            this.ftp.Password = this.settings.FtpUserPassword;
+            
             // Set values in forms from settings
             this.tbFTPAdress.Text = this.settings.FtpAddress;
             this.tbFTPUserName.Text = this.settings.FtpUserName;
@@ -96,21 +100,11 @@ namespace ITSharp.ScheDEX
                 this.settings.FtpRemotePath = this.tbFTPRemotePath.Text; //this.ftp.RemotePath;
                 this.settings.Save();
 
-                MessageBox.Show("Połączenie z serwerem FTP działa poprawnie.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Połączenie z serwerem FTP działa poprawnie.\nPołączenie zostało zapisane.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {
                 MessageBox.Show("Nie udało połączyć się z serwerem FTP.\nSzczegóły: " + sender.ToString(), "Problem z serwerem FTP", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-        }
-
-        public FormMain ContainerForm
-        {
-            set
-            {
-                this.container = value;
-                this.settings = value.settings;
-                value.ftp = this.ftp;
             }
         }
     }
