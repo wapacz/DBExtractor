@@ -56,7 +56,7 @@
             // lFileName
             // 
             this.lFileName.AutoSize = true;
-            this.lFileName.Location = new System.Drawing.Point(18, 187);
+            this.lFileName.Location = new System.Drawing.Point(13, 182);
             this.lFileName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lFileName.Name = "lFileName";
             this.lFileName.Size = new System.Drawing.Size(77, 15);
@@ -66,16 +66,16 @@
             // tbXMLFileName
             // 
             this.tbXMLFileName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbXMLFileName.Location = new System.Drawing.Point(180, 185);
+            this.tbXMLFileName.Location = new System.Drawing.Point(175, 180);
             this.tbXMLFileName.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbXMLFileName.Name = "tbXMLFileName";
-            this.tbXMLFileName.Size = new System.Drawing.Size(262, 21);
+            this.tbXMLFileName.Size = new System.Drawing.Size(444, 21);
             this.tbXMLFileName.TabIndex = 164;
             // 
             // lInterval
             // 
             this.lInterval.AutoSize = true;
-            this.lInterval.Location = new System.Drawing.Point(18, 156);
+            this.lInterval.Location = new System.Drawing.Point(13, 151);
             this.lInterval.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lInterval.Name = "lInterval";
             this.lInterval.Size = new System.Drawing.Size(119, 15);
@@ -85,10 +85,10 @@
             // tbInterval
             // 
             this.tbInterval.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tbInterval.Location = new System.Drawing.Point(180, 154);
+            this.tbInterval.Location = new System.Drawing.Point(175, 149);
             this.tbInterval.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbInterval.Name = "tbInterval";
-            this.tbInterval.Size = new System.Drawing.Size(262, 21);
+            this.tbInterval.Size = new System.Drawing.Size(444, 21);
             this.tbInterval.TabIndex = 13;
             this.tbInterval.Text = "60";
             // 
@@ -103,12 +103,12 @@
             this.lbScheduleEvents.Margin = new System.Windows.Forms.Padding(15);
             this.lbScheduleEvents.Name = "lbScheduleEvents";
             this.lbScheduleEvents.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbScheduleEvents.Size = new System.Drawing.Size(461, 191);
+            this.lbScheduleEvents.Size = new System.Drawing.Size(630, 217);
             this.lbScheduleEvents.TabIndex = 169;
             // 
             // bSaveScheduleEvent
             // 
-            this.bSaveScheduleEvent.Location = new System.Drawing.Point(179, 235);
+            this.bSaveScheduleEvent.Location = new System.Drawing.Point(358, 207);
             this.bSaveScheduleEvent.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bSaveScheduleEvent.Name = "bSaveScheduleEvent";
             this.bSaveScheduleEvent.Size = new System.Drawing.Size(130, 27);
@@ -119,7 +119,7 @@
             // 
             // bRemoveScheduleEvent
             // 
-            this.bRemoveScheduleEvent.Location = new System.Drawing.Point(313, 235);
+            this.bRemoveScheduleEvent.Location = new System.Drawing.Point(490, 207);
             this.bRemoveScheduleEvent.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bRemoveScheduleEvent.Name = "bRemoveScheduleEvent";
             this.bRemoveScheduleEvent.Size = new System.Drawing.Size(129, 27);
@@ -130,7 +130,7 @@
             // 
             // buttonSaveAndRun
             // 
-            this.buttonSaveAndRun.Location = new System.Drawing.Point(75, 13);
+            this.buttonSaveAndRun.Location = new System.Drawing.Point(78, 16);
             this.buttonSaveAndRun.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.buttonSaveAndRun.Name = "buttonSaveAndRun";
             this.buttonSaveAndRun.Size = new System.Drawing.Size(250, 28);
@@ -143,7 +143,7 @@
             // 
             this.labelTitle.AutoSize = true;
             this.labelTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
-            this.labelTitle.Location = new System.Drawing.Point(17, 17);
+            this.labelTitle.Location = new System.Drawing.Point(12, 12);
             this.labelTitle.Name = "labelTitle";
             this.labelTitle.Size = new System.Drawing.Size(206, 24);
             this.labelTitle.TabIndex = 170;
@@ -153,16 +153,16 @@
             // 
             this.panel1.Controls.Add(this.panel2);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(5, 481);
+            this.panel1.Location = new System.Drawing.Point(10, 476);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(463, 44);
+            this.panel1.Size = new System.Drawing.Size(632, 44);
             this.panel1.TabIndex = 171;
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.buttonSaveAndRun);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(136, 0);
+            this.panel2.Location = new System.Drawing.Point(305, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(327, 44);
             this.panel2.TabIndex = 0;
@@ -183,33 +183,33 @@
             this.panel3.Controls.Add(this.bSaveScheduleEvent);
             this.panel3.Controls.Add(this.bRemoveScheduleEvent);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel3.Location = new System.Drawing.Point(5, 5);
+            this.panel3.Location = new System.Drawing.Point(10, 10);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(463, 283);
+            this.panel3.Size = new System.Drawing.Size(632, 247);
             this.panel3.TabIndex = 172;
             // 
             // cbQuery
             // 
             this.cbQuery.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbQuery.FormattingEnabled = true;
-            this.cbQuery.Location = new System.Drawing.Point(180, 91);
+            this.cbQuery.Location = new System.Drawing.Point(175, 86);
             this.cbQuery.Name = "cbQuery";
-            this.cbQuery.Size = new System.Drawing.Size(262, 23);
+            this.cbQuery.Size = new System.Drawing.Size(444, 23);
             this.cbQuery.TabIndex = 171;
             // 
             // cbDBConnections
             // 
             this.cbDBConnections.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDBConnections.FormattingEnabled = true;
-            this.cbDBConnections.Location = new System.Drawing.Point(180, 60);
+            this.cbDBConnections.Location = new System.Drawing.Point(175, 55);
             this.cbDBConnections.Name = "cbDBConnections";
-            this.cbDBConnections.Size = new System.Drawing.Size(262, 23);
+            this.cbDBConnections.Size = new System.Drawing.Size(444, 23);
             this.cbDBConnections.TabIndex = 171;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(18, 63);
+            this.label2.Location = new System.Drawing.Point(13, 58);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(145, 15);
@@ -219,7 +219,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(18, 125);
+            this.label3.Location = new System.Drawing.Point(13, 120);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(74, 15);
@@ -229,7 +229,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(18, 94);
+            this.label1.Location = new System.Drawing.Point(13, 89);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(66, 15);
@@ -240,10 +240,10 @@
             // 
             this.tbFtp.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbFtp.Enabled = false;
-            this.tbFtp.Location = new System.Drawing.Point(180, 123);
+            this.tbFtp.Location = new System.Drawing.Point(175, 118);
             this.tbFtp.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFtp.Name = "tbFtp";
-            this.tbFtp.Size = new System.Drawing.Size(262, 21);
+            this.tbFtp.Size = new System.Drawing.Size(444, 21);
             this.tbFtp.TabIndex = 164;
             // 
             // panel4
@@ -251,9 +251,9 @@
             this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel4.Controls.Add(this.lbScheduleEvents);
             this.panel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel4.Location = new System.Drawing.Point(5, 288);
+            this.panel4.Location = new System.Drawing.Point(10, 257);
             this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(463, 193);
+            this.panel4.Size = new System.Drawing.Size(632, 219);
             this.panel4.TabIndex = 173;
             // 
             // EventsPanel
@@ -266,8 +266,8 @@
             this.Controls.Add(this.panel3);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.Name = "EventsPanel";
-            this.Padding = new System.Windows.Forms.Padding(5);
-            this.Size = new System.Drawing.Size(473, 530);
+            this.Padding = new System.Windows.Forms.Padding(10);
+            this.Size = new System.Drawing.Size(652, 530);
             this.Load += new System.EventHandler(this.EventsPanel_Load);
             this.VisibleChanged += new System.EventHandler(this.EventsPanel_VisibleChanged);
             this.panel1.ResumeLayout(false);

@@ -184,11 +184,13 @@ namespace ITSharp.ScheDEX
             if (args.IsWorking)
             {
                 this.notifyIcon1.Text = "ScheDEX\nUsługa pracuje prawidłowo.";
+                this.notifyIcon1.ShowBalloonTip(5000, "Informacja", "Usługa ScheDEX pracuje prawidłowo.", ToolTipIcon.Info);
                 //this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("28461-ico-alarm-clock-icon.ico")));
             }
             else
             {
                 this.notifyIcon1.Text = "ScheDEX\nUsługa nie pracuje.";
+                this.notifyIcon1.ShowBalloonTip(5000, "Ostrzeżenie", "Wykryto, że usługa ScheDEX nie pracuje prawidłowo.", ToolTipIcon.Warning);
                 //this.notifyIcon1.Icon = global::ScheDEX.Properties.Resources.
             }
         }

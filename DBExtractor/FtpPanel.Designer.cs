@@ -49,7 +49,7 @@
             // pbFTPConnectTest
             // 
             this.pbFTPConnectTest.Image = global::ScheDEX.Properties.Resources.loader1;
-            this.pbFTPConnectTest.Location = new System.Drawing.Point(75, 134);
+            this.pbFTPConnectTest.Location = new System.Drawing.Point(73, 132);
             this.pbFTPConnectTest.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.pbFTPConnectTest.Name = "pbFTPConnectTest";
             this.pbFTPConnectTest.Size = new System.Drawing.Size(19, 18);
@@ -100,7 +100,7 @@
             // 
             // bFTPConnectTest
             // 
-            this.bFTPConnectTest.Location = new System.Drawing.Point(71, 128);
+            this.bFTPConnectTest.Location = new System.Drawing.Point(69, 126);
             this.bFTPConnectTest.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bFTPConnectTest.Name = "bFTPConnectTest";
             this.bFTPConnectTest.Size = new System.Drawing.Size(250, 28);
@@ -115,7 +115,7 @@
             this.tbFTPRemotePath.Location = new System.Drawing.Point(160, 168);
             this.tbFTPRemotePath.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPRemotePath.Name = "tbFTPRemotePath";
-            this.tbFTPRemotePath.Size = new System.Drawing.Size(295, 21);
+            this.tbFTPRemotePath.Size = new System.Drawing.Size(453, 21);
             this.tbFTPRemotePath.TabIndex = 11;
             // 
             // tbFTPUserPass
@@ -125,7 +125,7 @@
             this.tbFTPUserPass.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPUserPass.Name = "tbFTPUserPass";
             this.tbFTPUserPass.PasswordChar = '•';
-            this.tbFTPUserPass.Size = new System.Drawing.Size(295, 21);
+            this.tbFTPUserPass.Size = new System.Drawing.Size(453, 21);
             this.tbFTPUserPass.TabIndex = 10;
             // 
             // tbFTPUserName
@@ -134,7 +134,7 @@
             this.tbFTPUserName.Location = new System.Drawing.Point(160, 104);
             this.tbFTPUserName.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPUserName.Name = "tbFTPUserName";
-            this.tbFTPUserName.Size = new System.Drawing.Size(295, 21);
+            this.tbFTPUserName.Size = new System.Drawing.Size(453, 21);
             this.tbFTPUserName.TabIndex = 9;
             // 
             // tbFTPAdress
@@ -143,7 +143,7 @@
             this.tbFTPAdress.Location = new System.Drawing.Point(160, 71);
             this.tbFTPAdress.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbFTPAdress.Name = "tbFTPAdress";
-            this.tbFTPAdress.Size = new System.Drawing.Size(295, 21);
+            this.tbFTPAdress.Size = new System.Drawing.Size(453, 21);
             this.tbFTPAdress.TabIndex = 8;
             // 
             // labelTitle
@@ -162,7 +162,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(5, 330);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(532, 159);
+            this.panel1.Size = new System.Drawing.Size(643, 159);
             this.panel1.TabIndex = 13;
             // 
             // panel2
@@ -170,7 +170,7 @@
             this.panel2.Controls.Add(this.pbFTPConnectTest);
             this.panel2.Controls.Add(this.bFTPConnectTest);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(209, 0);
+            this.panel2.Location = new System.Drawing.Point(320, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(323, 159);
             this.panel2.TabIndex = 0;
@@ -193,7 +193,7 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.Name = "FtpPanel";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Size = new System.Drawing.Size(542, 494);
+            this.Size = new System.Drawing.Size(653, 494);
             ((System.ComponentModel.ISupportInitialize)(this.pbFTPConnectTest)).EndInit();
             this.panel1.ResumeLayout(false);
             this.panel2.ResumeLayout(false);

@@ -276,6 +276,8 @@ namespace ITSharp.ScheDEX
                 this.cbAvailableDBs.Items.Add(sqlConnKey);
             }
 
+            this.cbAvailableDBs.Text = sqlConnKey;
+
             MessageBox.Show("Połączenie zostało zapisane.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             this.settings.Save();
@@ -290,6 +292,7 @@ namespace ITSharp.ScheDEX
             }
 
             this.settings.SqlConnectionStrings.Remove(this.cbAvailableDBs.Text);
+            this.settings.Save();
             this.cbAvailableDBs.Items.Remove(this.cbAvailableDBs.Text);
         }
 

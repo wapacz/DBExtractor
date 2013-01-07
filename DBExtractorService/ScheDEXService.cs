@@ -34,18 +34,6 @@ namespace ITSharp.ScheDEX
         public ScheDEXService()
         {
             InitializeComponent();
-
-
-            //RegistryKey register = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\ITSharp.pl\ScheDEX");
-            //if(register != null)
-            //    this.workingDir = Path.Combine(register.GetValue("UserWorkingDirectory").ToString(), "ScheDEX");
-
-            //this.eventsFilePath = Path.Combine(this.workingDir, @"events.bin");
-
-            //WorkingDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"ScheDEX");
-            //EventsFileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), @"ScheDEX\events.bin"); 
-
-            //this.workingDir = AppDomain.CurrentDomain.BaseDirectory + @"\";
         }
 
         private void LOG(String msg)
@@ -194,6 +182,11 @@ namespace ITSharp.ScheDEX
 
         protected void WorkerThread()
         {
+            // setup DOTs instead of COMMAs
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
             string workingFile;
 
             LOG("Begin of WorkerThread");
@@ -212,7 +205,7 @@ namespace ITSharp.ScheDEX
                     {
                         try
                         {
-                            workingFile = Path.Combine(WorkingDir + schedEvent.XMLFileName);
+                            workingFile = Path.Combine(WorkingDir, schedEvent.XMLFileName);
                             /*
                              * Connect with MSSQL server and use database from event
                              * and get the data for XML file
@@ -226,7 +219,7 @@ namespace ITSharp.ScheDEX
                              * Start creating XML file
                              */
                             XmlWriterSettings xmlWS = new XmlWriterSettings();
-                            xmlWS.Encoding = Encoding.UTF8;
+                            xmlWS.Encoding = new ASCIIEncoding(); //Encoding.UTF8;
 
                             using (XmlWriter writer = XmlWriter.Create(workingFile, xmlWS))
                             {

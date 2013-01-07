@@ -29,6 +29,8 @@ namespace ITSharp.ScheDEX
         {
             this.container.events.Save();
             this.container.service.ExecuteCommand(250); // refresh events 
+
+            MessageBox.Show("Dane zostały zapisane i usługa została powiadomiona", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void EventsPanel_Load(object sender, EventArgs e)

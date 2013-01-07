@@ -61,7 +61,7 @@
             // 
             this.pbDatabasesLoader.Enabled = false;
             this.pbDatabasesLoader.Image = global::ScheDEX.Properties.Resources.loader1;
-            this.pbDatabasesLoader.Location = new System.Drawing.Point(169, 220);
+            this.pbDatabasesLoader.Location = new System.Drawing.Point(169, 286);
             this.pbDatabasesLoader.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.pbDatabasesLoader.Name = "pbDatabasesLoader";
             this.pbDatabasesLoader.Size = new System.Drawing.Size(19, 18);
@@ -74,7 +74,7 @@
             // 
             this.lDatabase.AutoSize = true;
             this.lDatabase.Enabled = false;
-            this.lDatabase.Location = new System.Drawing.Point(23, 221);
+            this.lDatabase.Location = new System.Drawing.Point(23, 287);
             this.lDatabase.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lDatabase.Name = "lDatabase";
             this.lDatabase.Size = new System.Drawing.Size(80, 15);
@@ -86,17 +86,17 @@
             this.cbDatabases.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbDatabases.Enabled = false;
             this.cbDatabases.FormattingEnabled = true;
-            this.cbDatabases.Location = new System.Drawing.Point(167, 218);
+            this.cbDatabases.Location = new System.Drawing.Point(167, 284);
             this.cbDatabases.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.cbDatabases.Name = "cbDatabases";
-            this.cbDatabases.Size = new System.Drawing.Size(289, 23);
+            this.cbDatabases.Size = new System.Drawing.Size(447, 23);
             this.cbDatabases.TabIndex = 6;
             this.cbDatabases.SelectedIndexChanged += new System.EventHandler(this.cbDatabases_SelectedIndexChanged);
             // 
             // lServerName
             // 
             this.lServerName.AutoSize = true;
-            this.lServerName.Location = new System.Drawing.Point(23, 73);
+            this.lServerName.Location = new System.Drawing.Point(23, 139);
             this.lServerName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lServerName.Name = "lServerName";
             this.lServerName.Size = new System.Drawing.Size(95, 15);
@@ -106,7 +106,7 @@
             // pbServerNamesLoader
             // 
             this.pbServerNamesLoader.Image = global::ScheDEX.Properties.Resources.loader1;
-            this.pbServerNamesLoader.Location = new System.Drawing.Point(170, 74);
+            this.pbServerNamesLoader.Location = new System.Drawing.Point(170, 140);
             this.pbServerNamesLoader.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.pbServerNamesLoader.Name = "pbServerNamesLoader";
             this.pbServerNamesLoader.Size = new System.Drawing.Size(16, 16);
@@ -120,17 +120,17 @@
             this.cbServerNames.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbServerNames.Enabled = false;
             this.cbServerNames.FormattingEnabled = true;
-            this.cbServerNames.Location = new System.Drawing.Point(167, 70);
+            this.cbServerNames.Location = new System.Drawing.Point(167, 136);
             this.cbServerNames.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.cbServerNames.Name = "cbServerNames";
-            this.cbServerNames.Size = new System.Drawing.Size(289, 23);
+            this.cbServerNames.Size = new System.Drawing.Size(447, 23);
             this.cbServerNames.TabIndex = 0;
             this.cbServerNames.SelectedIndexChanged += new System.EventHandler(this.cbServerNames_SelectedIndexChanged);
             // 
             // pbConnecting
             // 
             this.pbConnecting.Image = global::ScheDEX.Properties.Resources.loader1;
-            this.pbConnecting.Location = new System.Drawing.Point(284, 190);
+            this.pbConnecting.Location = new System.Drawing.Point(429, 257);
             this.pbConnecting.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.pbConnecting.Name = "pbConnecting";
             this.pbConnecting.Size = new System.Drawing.Size(19, 18);
@@ -142,10 +142,10 @@
             // bSQLConnect
             // 
             this.bSQLConnect.Enabled = false;
-            this.bSQLConnect.Location = new System.Drawing.Point(281, 188);
+            this.bSQLConnect.Location = new System.Drawing.Point(426, 254);
             this.bSQLConnect.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bSQLConnect.Name = "bSQLConnect";
-            this.bSQLConnect.Size = new System.Drawing.Size(175, 23);
+            this.bSQLConnect.Size = new System.Drawing.Size(188, 23);
             this.bSQLConnect.TabIndex = 5;
             this.bSQLConnect.Text = "Sprawdź połączenie";
             this.bSQLConnect.UseVisualStyleBackColor = true;
@@ -156,7 +156,7 @@
             this.rbAuthWindows.AutoSize = true;
             this.rbAuthWindows.Checked = true;
             this.rbAuthWindows.Enabled = false;
-            this.rbAuthWindows.Location = new System.Drawing.Point(171, 101);
+            this.rbAuthWindows.Location = new System.Drawing.Point(171, 167);
             this.rbAuthWindows.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.rbAuthWindows.Name = "rbAuthWindows";
             this.rbAuthWindows.Size = new System.Drawing.Size(75, 19);
@@ -170,18 +170,18 @@
             // 
             this.tbSQLUserPass.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbSQLUserPass.Enabled = false;
-            this.tbSQLUserPass.Location = new System.Drawing.Point(167, 161);
+            this.tbSQLUserPass.Location = new System.Drawing.Point(167, 227);
             this.tbSQLUserPass.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbSQLUserPass.Name = "tbSQLUserPass";
             this.tbSQLUserPass.PasswordChar = '•';
-            this.tbSQLUserPass.Size = new System.Drawing.Size(289, 21);
+            this.tbSQLUserPass.Size = new System.Drawing.Size(447, 21);
             this.tbSQLUserPass.TabIndex = 4;
             // 
             // rbAuthSQLServer
             // 
             this.rbAuthSQLServer.AutoSize = true;
             this.rbAuthSQLServer.Enabled = false;
-            this.rbAuthSQLServer.Location = new System.Drawing.Point(271, 101);
+            this.rbAuthSQLServer.Location = new System.Drawing.Point(271, 167);
             this.rbAuthSQLServer.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.rbAuthSQLServer.Name = "rbAuthSQLServer";
             this.rbAuthSQLServer.Size = new System.Drawing.Size(91, 19);
@@ -194,17 +194,17 @@
             // 
             this.tbSQLUserName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.tbSQLUserName.Enabled = false;
-            this.tbSQLUserName.Location = new System.Drawing.Point(167, 131);
+            this.tbSQLUserName.Location = new System.Drawing.Point(167, 197);
             this.tbSQLUserName.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.tbSQLUserName.Name = "tbSQLUserName";
-            this.tbSQLUserName.Size = new System.Drawing.Size(289, 21);
+            this.tbSQLUserName.Size = new System.Drawing.Size(447, 21);
             this.tbSQLUserName.TabIndex = 3;
             // 
             // lAuth
             // 
             this.lAuth.AutoSize = true;
             this.lAuth.Enabled = false;
-            this.lAuth.Location = new System.Drawing.Point(23, 103);
+            this.lAuth.Location = new System.Drawing.Point(23, 169);
             this.lAuth.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lAuth.Name = "lAuth";
             this.lAuth.Size = new System.Drawing.Size(72, 15);
@@ -215,7 +215,7 @@
             // 
             this.lUserPass.AutoSize = true;
             this.lUserPass.Enabled = false;
-            this.lUserPass.Location = new System.Drawing.Point(23, 163);
+            this.lUserPass.Location = new System.Drawing.Point(23, 229);
             this.lUserPass.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lUserPass.Name = "lUserPass";
             this.lUserPass.Size = new System.Drawing.Size(111, 15);
@@ -226,7 +226,7 @@
             // 
             this.lUserName.AutoSize = true;
             this.lUserName.Enabled = false;
-            this.lUserName.Location = new System.Drawing.Point(23, 133);
+            this.lUserName.Location = new System.Drawing.Point(23, 199);
             this.lUserName.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lUserName.Name = "lUserName";
             this.lUserName.Size = new System.Drawing.Size(117, 15);
@@ -249,14 +249,14 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(5, 364);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(483, 72);
+            this.panel1.Size = new System.Drawing.Size(642, 72);
             this.panel1.TabIndex = 18;
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.bSaveConnection);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panel2.Location = new System.Drawing.Point(192, 0);
+            this.panel2.Location = new System.Drawing.Point(351, 0);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(291, 72);
             this.panel2.TabIndex = 0;
@@ -264,7 +264,7 @@
             // bSaveConnection
             // 
             this.bSaveConnection.Enabled = false;
-            this.bSaveConnection.Location = new System.Drawing.Point(39, 41);
+            this.bSaveConnection.Location = new System.Drawing.Point(37, 39);
             this.bSaveConnection.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bSaveConnection.Name = "bSaveConnection";
             this.bSaveConnection.Size = new System.Drawing.Size(250, 28);
@@ -277,16 +277,16 @@
             // 
             this.cbAvailableDBs.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbAvailableDBs.FormattingEnabled = true;
-            this.cbAvailableDBs.Location = new System.Drawing.Point(167, 302);
+            this.cbAvailableDBs.Location = new System.Drawing.Point(167, 70);
             this.cbAvailableDBs.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.cbAvailableDBs.Name = "cbAvailableDBs";
-            this.cbAvailableDBs.Size = new System.Drawing.Size(226, 23);
+            this.cbAvailableDBs.Size = new System.Drawing.Size(384, 23);
             this.cbAvailableDBs.TabIndex = 6;
             this.cbAvailableDBs.SelectedIndexChanged += new System.EventHandler(this.cbDatabases_SelectedIndexChanged);
             // 
             // bRemoveDBConn
             // 
-            this.bRemoveDBConn.Location = new System.Drawing.Point(398, 301);
+            this.bRemoveDBConn.Location = new System.Drawing.Point(556, 69);
             this.bRemoveDBConn.Name = "bRemoveDBConn";
             this.bRemoveDBConn.Size = new System.Drawing.Size(58, 23);
             this.bRemoveDBConn.TabIndex = 19;
@@ -297,7 +297,7 @@
             // lAvailableDBs
             // 
             this.lAvailableDBs.AutoSize = true;
-            this.lAvailableDBs.Location = new System.Drawing.Point(23, 306);
+            this.lAvailableDBs.Location = new System.Drawing.Point(23, 73);
             this.lAvailableDBs.Name = "lAvailableDBs";
             this.lAvailableDBs.Size = new System.Drawing.Size(123, 15);
             this.lAvailableDBs.TabIndex = 20;
@@ -331,7 +331,7 @@
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.Name = "SqlPanel";
             this.Padding = new System.Windows.Forms.Padding(5);
-            this.Size = new System.Drawing.Size(493, 441);
+            this.Size = new System.Drawing.Size(652, 441);
             this.Load += new System.EventHandler(this.SqlPanel_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbDatabasesLoader)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbServerNamesLoader)).EndInit();

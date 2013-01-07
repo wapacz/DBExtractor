@@ -13,6 +13,8 @@
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            this.service.Dispose();
+
             if (disposing && (components != null))
             {
                 components.Dispose();
@@ -97,7 +99,7 @@
             this.splitContainer.Panel1.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.splitContainer.Panel1.Controls.Add(this.pLeftSideImage);
             this.splitContainer.Panel1.Controls.Add(this.panelLinks);
-            this.splitContainer.Size = new System.Drawing.Size(739, 543);
+            this.splitContainer.Size = new System.Drawing.Size(846, 543);
             this.splitContainer.SplitterDistance = 200;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
@@ -188,7 +190,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(749, 553);
+            this.ClientSize = new System.Drawing.Size(856, 553);
             this.Controls.Add(this.splitContainer);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;

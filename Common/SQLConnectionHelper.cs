@@ -28,23 +28,77 @@ namespace ITSharp.ScheDEX.Common
         private ArrayList tables;
         private Dictionary<String, String> queries;
 
-        private string query1 = @"SELECT
+        private string query_kartoteki = @"SELECT
 	[Magazyny].[mag_kod] AS [Magazyn],
 	[Oferta].[ofr_symbol] AS [Symbol],
 	[Oferta].[ofr_nazwa] AS [Nazwa],
 	[Oferta].[ofr_ilosc] AS [Stan magazynowy],
-	--[Ilość do dyspozycji]
+	[Oferta].[ofr_ilosc]-[Oferta].[ofr_rezerwacje] AS [Ilość do dyspozycji],
 	[Jednostki].[jdn_kod] AS [Jm],
-	--
-	[Oferta].[ofr_waga] AS [Waga]
+	[CENA_DETALICZNA].[ofc_cena] AS [Cena],
+	[ONTHEFLY].[ostatnia_cena] AS [Ostatnia cena zakupu],
+	[Oferta].[ofr_cena_min] AS [Cena minimalna],
+	[Vat].[vat_stawka] AS [Vat],
+	[Oferta].[ofr_waga] AS [Waga],
+	[Oferta].[ofr_pkwiu] AS [PKWiU],
+	[Oferta].[ofr_sww] AS [SWW],
+	[Lokalizacje].[lok_nazwa] AS [Lokalizacja],
+	[Producenci].prd_nazwa AS [Producent],
+	[GrupyOfr].[grf_nazwa] AS [Grupa],
+	[OfertaBarkody].[ofb_kod] AS [Kod]
 FROM 
 	[Oferta]
-INNER JOIN
+LEFT JOIN
 	[Magazyny] ON [Oferta].[ofr_magazyn] = [Magazyny].[mag_id]
-INNER JOIN
-	[Jednostki] ON [Oferta].[ofr_jednostka] = [Jednostki].[jdn_id];";
+LEFT JOIN
+	[Jednostki] ON [Oferta].[ofr_jednostka] = [Jednostki].[jdn_id]
+LEFT JOIN
+	[Producenci] ON [Oferta].[ofr_producent] = [Producenci].[prd_id]
+LEFT JOIN
+	[GrupyOfr] ON [Oferta].[ofr_grupa] = [GrupyOfr].[grf_id]
+LEFT JOIN
+    [Lokalizacje] ON [Oferta].[ofr_lokalizacja] = [Lokalizacje].[lok_id]
+LEFT JOIN
+	[Vat] ON [Oferta].[ofr_vat] = [Vat].[vat_id]
+LEFT JOIN
+	[OfertaBarkody] ON [Oferta].[ofr_symbol] = [OfertaBarkody].[ofb_ofr_symbol]
+LEFT JOIN -- Ostatnia cena
+	(
+	SELECT  [TransPrzychody].[trp_ofr] AS ofreta_id, 
+			[TransPrzychody].[trp_data] AS ostatnia_data,
+			[TransPrzychody].[trp_cena] AS ostatnia_cena
+	FROM [TransPrzychody] 
+	INNER JOIN
+		(
+		SELECT [trp_ofr], MAX([trp_id]) AS _id
+		FROM [TransPrzychody] 
+		GROUP BY [trp_ofr]
+		) MAX_DATA
+		ON ([TransPrzychody].[trp_ofr] = [MAX_DATA].[trp_ofr] AND [TransPrzychody].[trp_id] = [MAX_DATA].[_id])
+	) [ONTHEFLY]
+	ON [ONTHEFLY].[ofreta_id] = [Oferta].[ofr_id]
 
-        private string query2 = @"SELECT * FROM [Oferta];";
+LEFT JOIN -- Cena detaliczna
+	(
+	SELECT  [ofc_ofr], 
+			[ofc_cena]
+	FROM [OfertaCeny]
+	WHERE [OfertaCeny].[ofc_rodzaj] = 1
+	) CENA_DETALICZNA
+	ON [Oferta].[ofr_id] = [CENA_DETALICZNA].[ofc_ofr];";
+//WHERE 
+//    [Magazyny].[mag_kod] = 'NAV';";
+
+        private string query_kontrahenci = @"SELECT
+	[Kontrahenci].[knt_id] AS [Id],
+	[Kontrahenci].[knt_kod] AS [Kod],
+	[Kontrahenci].[knt_nazwa] AS [Nazwa],
+	[Kontrahenci].[knt_nip] AS [NIP],
+	[Kontrahenci].[knt_email] AS [Email],
+	[Kontrahenci].[knt_kredyt] AS [Limit kredytowy],
+	[Kontrahenci].[knt_konto_ma]-[Kontrahenci].[knt_konto_wn] AS [Aktualny stan konta]
+FROM 
+	[Kontrahenci];";
 
 
 
@@ -80,8 +134,8 @@ INNER JOIN
             this.tables = new ArrayList();
 
             this.queries = new Dictionary<String, String>();
-            this.queries.Add("Kartoteki", query1);
-            this.queries.Add("Dane klientów", query2);
+            this.queries.Add("Kartoteki", query_kartoteki);
+            this.queries.Add("Dane klientów", query_kontrahenci);
         }
 
         public void StartScanServerNames()

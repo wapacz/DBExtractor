@@ -40,10 +40,11 @@ namespace ITSharp.ScheDEX.Common
 
             try
             {
-                ftp = (FtpWebRequest)WebRequest.Create("ftp://"+this.address);
+                ftp = (FtpWebRequest)WebRequest.Create("ftp://"+this.address+"/"+this.address);
                 ftp.Credentials = new NetworkCredential(this.login, this.password);
                 ftp.Method = WebRequestMethods.Ftp.PrintWorkingDirectory;
-                ftp.GetResponse();
+                WebResponse wr = ftp.GetResponse();
+                Console.WriteLine(wr.ToString());
 
                 if (ConnectionEvent != null)
                     ConnectionEvent(this, FTPConnectionEventArgs.Success);
