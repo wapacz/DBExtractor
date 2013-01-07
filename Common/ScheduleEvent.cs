@@ -90,7 +90,7 @@ namespace ITSharp.ScheDEX.Common
             connString.ConnectionString = this.SQLConnectionString;
 
             String result = String.Format(
-                "{0} > {1} > {2}, [{3} min.], plik: {4}, FTP: {5}",
+                "[{3} min.] {0}-{1}-{2}, plik: {4}, FTP: {5}",
                 connString.Server,
                 connString.Database,
                 this.sql_query_name,

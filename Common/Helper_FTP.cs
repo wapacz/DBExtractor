@@ -5,8 +5,10 @@ using System.Net;
 
 namespace ITSharp.Helpers.FTP
 {
-    public class Client
+    public class FTPClient
     {
+        public event EventHandler<FTPConnectionEventArgs> ConnectionEvent;
+
         private string password;
         private string userName;
         private string uri;
@@ -16,12 +18,61 @@ namespace ITSharp.Helpers.FTP
         public bool Binary = true;
         public bool EnableSsl = false;
         public bool Hash = false;
+        public bool KeepAlive = false;
+        public int Timeout = 10000000;
+        public int ReadWriteTimeout = 10000000; 
 
-        public Client(string uri, string userName, string password)
+        public FTPClient(string uri, string userName, string password)
         {
             this.uri = uri;
             this.userName = userName;
             this.password = password;
+        }
+
+        public void VerifyConnection(String path)
+        {
+            Boolean found;
+            string[] dirList;
+            try
+            {
+                var separator = new char[] { '\\', '/' };
+                foreach (String directory in path.Split(separator))
+                {
+                    found = false;
+                    dirList = this.ListDirectory();
+                    foreach(string dir in dirList)
+                    {
+                        if (dir.Equals(directory))
+                        {
+                            found = true;
+                            //break;
+                        }
+                    }
+                    if (found)
+                    {
+                        this.ChangeWorkingDirectory(directory);
+                    }
+                    else
+                    {
+                        // dir not found
+                        if (ConnectionEvent != null)
+                            ConnectionEvent(this, FTPConnectionEventArgs.SuccessWithProblems);
+                        return;
+                    }
+                }
+                
+                if (ConnectionEvent != null)
+                    ConnectionEvent(this, FTPConnectionEventArgs.Success);
+            }
+            catch (Exception ex)
+            {
+                if(ConnectionEvent != null)
+                    ConnectionEvent(ex.Message, FTPConnectionEventArgs.Fail);
+            }
+            finally
+            {
+                //ftp.Disconnect();
+            }
         }
 
         public string AppendFile(string source, string destination)
@@ -165,6 +216,29 @@ namespace ITSharp.Helpers.FTP
             return getStatusDescription(request);
         }
 
+        public string[] PrintMyWorkingDirectory()
+        {
+            var list = new List<string>();
+
+            var request = createRequest(WebRequestMethods.Ftp.PrintWorkingDirectory);
+
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(stream, true))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            list.Add(reader.ReadLine());
+                        }
+                    }
+                }
+            }
+
+            return list.ToArray();
+        }
+
         public string PrintWorkingDirectory()
         {
             var request = createRequest(WebRequestMethods.Ftp.PrintWorkingDirectory);
@@ -255,6 +329,9 @@ namespace ITSharp.Helpers.FTP
             r.UseBinary = Binary;
             r.EnableSsl = EnableSsl;
             r.UsePassive = Passive;
+            r.KeepAlive = KeepAlive;
+            r.Timeout = Timeout;
+            r.ReadWriteTimeout = ReadWriteTimeout; 
 
             return r;
         }
@@ -270,6 +347,56 @@ namespace ITSharp.Helpers.FTP
         private string combine(string path1, string path2)
         {
             return Path.Combine(path1, path2).Replace("\\", "/");
+        }
+    }
+
+    public class FTPConnectionEventArgs : EventArgs
+    {
+        private Boolean isSuccess;
+        public Boolean IsSuccess
+        {
+            get { return this.isSuccess; }
+            //set { this.isSuccess = value; }
+        }
+
+        private Boolean isDirectoryExists;
+        public Boolean IsDirectoryExists
+        {
+            get { return this.isDirectoryExists; }
+            //set { this.isSuccess = value; }
+        }
+
+        public static FTPConnectionEventArgs Success
+        {
+            get
+            {
+                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+                args.isSuccess = true;
+                args.isDirectoryExists = true;
+                return args;
+            }
+        }
+
+        public static FTPConnectionEventArgs SuccessWithProblems
+        {
+            get
+            {
+                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+                args.isSuccess = true;
+                args.isDirectoryExists = false;
+                return args;
+            }
+        }
+
+        public static FTPConnectionEventArgs Fail
+        {
+            get
+            {
+                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+                args.isSuccess = false;
+                args.isDirectoryExists = false;
+                return args;
+            }
         }
     }
 }

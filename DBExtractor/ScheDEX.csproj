@@ -72,7 +72,6 @@
       <DependentUpon>FtpPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="GUIHelper.cs" />
-    <Compile Include="Helper_FTP.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServicePanel.cs">

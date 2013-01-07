@@ -39,7 +39,7 @@ namespace ITSharp.ScheDEX
         private Dictionary<String, Bitmap> leftSideImages;
 
         internal SQLConnectionHelper sql;
-        internal FTPHelper ftp;
+        //internal FTPHelper ftp;
         internal ServiceHelper service;
 
         public FormMain()
@@ -260,6 +260,11 @@ namespace ITSharp.ScheDEX
             this.userPanels[key].Enabled = true;
 
             this.pLeftSideImage.BackgroundImage = this.leftSideImages[key];
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Program służy do okresowego generowania plików XML na podstawie danych z bazy MSSQL i umieszczaniu ich na serwerze FTP." , "O programie...", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

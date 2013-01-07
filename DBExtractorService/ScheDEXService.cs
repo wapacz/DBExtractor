@@ -4,13 +4,14 @@ using System.Linq;
 using System.Text;
 using System.ServiceProcess;
 using System.Threading;
-using ITSharp.ScheDEX.Common;
 using System.IO;
 using System.Collections;
 using System.Data.SqlClient;
 using System.Data;
 using System.Xml;
 using Microsoft.Win32;
+using ITSharp.ScheDEX.Common;
+using ITSharp.Helpers.FTP;
 
 namespace ITSharp.ScheDEX
 {
@@ -26,8 +27,8 @@ namespace ITSharp.ScheDEX
         private ScheduleEventList events, todoEvents;
         //private string workingDir;
 
-        private static readonly string PREFIX = @"xls";
-        private static readonly string NS = @"urn:schemas-microsoft-com:office:spreadsheet";
+        private static string PREFIX = @"xls";
+        private static string NS = @"urn:schemas-microsoft-com:office:spreadsheet";
         //private static readonly string PREFIX = null;
         //private static readonly string NS = null;
 
@@ -36,13 +37,13 @@ namespace ITSharp.ScheDEX
             InitializeComponent();
         }
 
-        private void LOG(String msg)
-        {
-            System.IO.File.AppendAllText(
-                @"c:\service.log",
-                String.Format("[{0}] {1}\n", DateTime.Now.ToString(), msg)
-                );
-        }
+        //private void LOG(String msg)
+        //{
+        //    System.IO.File.AppendAllText(
+        //        @"c:\service.log",
+        //        String.Format("[{0}] {1}\n", DateTime.Now.ToString(), msg)
+        //        );
+        //}
 
         private void InitializeComponent()
         {
@@ -70,11 +71,11 @@ namespace ITSharp.ScheDEX
         /// </summary>
         protected override void OnStart(string[] args)
         {
-            LOG("Starting service");
+            //LOG("Starting service");
 
-            //LOG("CommonAppData: " + Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
-            LOG("Working dir: " + WorkingDir);
-            LOG("Events file: " + EventsFilePath);
+            ////LOG("CommonAppData: " + Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
+            //LOG("Working dir: " + WorkingDir);
+            //LOG("Events file: " + EventsFilePath);
 
             base.OnStart(args);
 
@@ -99,9 +100,9 @@ namespace ITSharp.ScheDEX
 
 
 
-            LOG("Reading events");
-            foreach (ScheduleEvent schedEvent in this.events)
-                LOG(" - ScheduleEvent: " + schedEvent.XMLFileName + "(every " + schedEvent.Interval + " minute(s)");
+            //LOG("Reading events");
+            //foreach (ScheduleEvent schedEvent in this.events)
+                //LOG(" - ScheduleEvent: " + schedEvent.XMLFileName + "(every " + schedEvent.Interval + " minute(s)");
 
 
             /*
@@ -113,7 +114,7 @@ namespace ITSharp.ScheDEX
             }
 
 
-            LOG("Service started");
+            //LOG("Service started");
         }
 
         /// <summary>
@@ -121,13 +122,13 @@ namespace ITSharp.ScheDEX
         /// </summary>
         protected override void OnStop()
         {
-            LOG("Stoping service");
+            //LOG("Stoping service");
 
             this.forever = false;
             //this.Stop();
             base.OnStop();
 
-            LOG("Service stoped");
+            //LOG("Service stoped");
         }
 
 
@@ -147,14 +148,14 @@ namespace ITSharp.ScheDEX
                 {
                     this.todoEvents.Add(new ScheduleEventWrapper(schedEvent));
                 }
-                LOG("New events loaded...");
+                //LOG("New events loaded...");
             }
         }
 
 
         protected void MainThread()
         {
-            LOG("Begin of MainThread");
+            //LOG("Begin of MainThread");
 
             int currentMinutes = 0;
             //foreach (ScheduleEvent schedEvent in this.events)
@@ -164,7 +165,7 @@ namespace ITSharp.ScheDEX
 
             while (this.forever)
             {
-                //LOG("LOOP in MainThread");
+                ////LOG("LOOP in MainThread");
 
                 currentMinutes = DateTime.Now.Hour * 60 + DateTime.Now.Minute;
 
@@ -173,7 +174,7 @@ namespace ITSharp.ScheDEX
                     if (currentMinutes % schedEvent.Interval == 0 && DateTime.Now.Second == 0)
                     {
                         this.todoEvents.Add(new ScheduleEventWrapper(schedEvent));
-                        LOG("ScheduleEvent added to queue: " + schedEvent.XMLFileName);
+                        //LOG("ScheduleEvent added to queue: " + schedEvent.XMLFileName);
                     }
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -189,17 +190,17 @@ namespace ITSharp.ScheDEX
 
             string workingFile;
 
-            LOG("Begin of WorkerThread");
+            //LOG("Begin of WorkerThread");
 
             while (this.forever)
             {
-                //LOG("LOOP in WorkerThread");
+                ////LOG("LOOP in WorkerThread");
 
                 foreach (ScheduleEventWrapper schedEvent in new ArrayList(this.todoEvents))
                 {
                     schedEvent.IncreaseAttemptCounter();
 
-                    LOG("Working with ScheduleEvent: " + schedEvent.XMLFileName);
+                    //LOG("Working with ScheduleEvent: " + schedEvent.XMLFileName);
 
                     using (SqlConnection sqlConnection = new SqlConnection(schedEvent.SQLConnectionString))
                     {
@@ -223,136 +224,162 @@ namespace ITSharp.ScheDEX
 
                             using (XmlWriter writer = XmlWriter.Create(workingFile, xmlWS))
                             {
-                                /*
-                                 * Fill header of XML file
-                                 */
-                                writer.WriteStartDocument();
-                                writer.WriteStartElement(PREFIX, "Workbook", NS);
-
-                                /*
-                                 * Fill specific header of table
-                                 */
-                                writer.WriteStartElement(PREFIX, "Styles", NS);
-                                writer.WriteStartElement(PREFIX, "Style", NS);
-                                writer.WriteAttributeString(PREFIX, "ID", NS, "1");
-                                writer.WriteStartElement(PREFIX, "Font", NS);
-                                writer.WriteAttributeString(PREFIX, "Bold", NS, "1");
-                                writer.WriteEndElement(); //Font
-                                writer.WriteEndElement(); //Style
-                                writer.WriteEndElement(); //Styles
-
-                                writer.WriteStartElement(PREFIX, "Worksheet", NS);
-                                writer.WriteAttributeString(PREFIX, "Name", NS, "Arkusz");
-                                writer.WriteStartElement(PREFIX, "Table", NS);
-
-                                foreach (DataColumn col in dataTable.Columns)
+                                if (schedEvent.SQLQueryName == "Kartoteki")
                                 {
-                                    writer.WriteStartElement(PREFIX, "Column", NS);
-                                    writer.WriteAttributeString(PREFIX, "Width", NS, "100");
-                                    writer.WriteEndElement(); // Column
-                                }
+                                    PREFIX = @"xls";
+                                    NS = @"urn:schemas-microsoft-com:office:spreadsheet";
 
-                                writer.WriteStartElement(PREFIX, "Row", NS);
-                                writer.WriteAttributeString(PREFIX, "StyleID", NS, "1");
+                                    /*
+                                     * Fill header of XML file
+                                     */
+                                    writer.WriteStartDocument();
+                                    writer.WriteStartElement(PREFIX, "Workbook", NS);
 
-                                foreach (DataColumn col in dataTable.Columns)
-                                {
-                                    writer.WriteStartElement(PREFIX, "Cell", NS);
-                                    writer.WriteStartElement(PREFIX, "Data", NS);
-                                    writer.WriteAttributeString(PREFIX, "Type", NS, "String");
-                                    writer.WriteString(col.ColumnName);
-                                    writer.WriteEndElement(); // Data
-                                    writer.WriteEndElement(); // Cell
+                                    /*
+                                     * Fill specific header of table
+                                     */
+                                    writer.WriteStartElement(PREFIX, "Styles", NS);
+                                    writer.WriteStartElement(PREFIX, "Style", NS);
+                                    writer.WriteAttributeString(PREFIX, "ID", NS, "1");
+                                    writer.WriteStartElement(PREFIX, "Font", NS);
+                                    writer.WriteAttributeString(PREFIX, "Bold", NS, "1");
+                                    writer.WriteEndElement(); //Font
+                                    writer.WriteEndElement(); //Style
+                                    writer.WriteEndElement(); //Styles
 
-                                }
-                                writer.WriteEndElement(); // Row
+                                    writer.WriteStartElement(PREFIX, "Worksheet", NS);
+                                    writer.WriteAttributeString(PREFIX, "Name", NS, "Arkusz");
+                                    writer.WriteStartElement(PREFIX, "Table", NS);
 
-                                foreach (DataRow row in dataTable.Rows)
-                                {
+                                    foreach (DataColumn col in dataTable.Columns)
+                                    {
+                                        writer.WriteStartElement(PREFIX, "Column", NS);
+                                        writer.WriteAttributeString(PREFIX, "Width", NS, "100");
+                                        writer.WriteEndElement(); // Column
+                                    }
+
                                     writer.WriteStartElement(PREFIX, "Row", NS);
+                                    writer.WriteAttributeString(PREFIX, "StyleID", NS, "1");
 
                                     foreach (DataColumn col in dataTable.Columns)
                                     {
                                         writer.WriteStartElement(PREFIX, "Cell", NS);
-
                                         writer.WriteStartElement(PREFIX, "Data", NS);
-                                        writer.WriteAttributeString(PREFIX, "Type", NS, XMLHelper.ConvertType(Type.GetTypeCode(col.DataType)));
-                                        writer.WriteString(row[col].ToString());
+                                        writer.WriteAttributeString(PREFIX, "Type", NS, "String");
+                                        writer.WriteString(col.ColumnName);
                                         writer.WriteEndElement(); // Data
-
                                         writer.WriteEndElement(); // Cell
+
+                                    }
+                                    writer.WriteEndElement(); // Row
+
+                                    foreach (DataRow row in dataTable.Rows)
+                                    {
+                                        writer.WriteStartElement(PREFIX, "Row", NS);
+
+                                        foreach (DataColumn col in dataTable.Columns)
+                                        {
+                                            writer.WriteStartElement(PREFIX, "Cell", NS);
+
+                                            writer.WriteStartElement(PREFIX, "Data", NS);
+                                            writer.WriteAttributeString(PREFIX, "Type", NS, XMLHelper.ConvertType(Type.GetTypeCode(col.DataType)));
+                                            writer.WriteString(row[col].ToString());
+                                            writer.WriteEndElement(); // Data
+
+                                            writer.WriteEndElement(); // Cell
+                                        }
+
+                                        writer.WriteEndElement(); // Row
                                     }
 
-                                    writer.WriteEndElement(); // Row
+                                    writer.WriteEndElement(); // Table
+                                    writer.WriteEndElement(); // Worksheet
+
+                                    writer.WriteEndElement();
+                                    writer.WriteEndDocument();
                                 }
+                                else
+                                {
+                                    PREFIX = null;
+                                    NS = null;
+                                    /*
+                                     * Fill header of XML file
+                                     */
+                                    writer.WriteStartDocument();
+                                    writer.WriteStartElement(PREFIX, "Table", NS);
 
-                                writer.WriteEndElement(); // Table
-                                writer.WriteEndElement(); // Worksheet
+                                    /*
+                                     * Fill column names to XML
+                                     */
+                                    writer.WriteStartElement(PREFIX, "Header", NS);
+                                    foreach (DataColumn col in dataTable.Columns)
+                                    {
+                                        writer.WriteStartElement(PREFIX, "Cell", NS);
+                                        writer.WriteAttributeString(PREFIX, "DataType", NS, XMLHelper.ConvertType(Type.GetTypeCode(col.DataType)));
+                                        writer.WriteString(col.ColumnName);
+                                        writer.WriteEndElement(); // Cell
+                                    }
+                                    writer.WriteEndElement(); // Header
 
-                                writer.WriteEndElement();
-                                writer.WriteEndDocument();
+                                    /*
+                                     * Fill data from DB to XML
+                                     */
+                                    foreach (DataRow row in dataTable.Rows)
+                                    {
+                                        writer.WriteStartElement(PREFIX, "Row", NS);
 
-                                #region HIDEN
-                                ///*
-                                // * Fill header of XML file
-                                // */
-                                //writer.WriteStartDocument();
-                                //writer.WriteStartElement(PREFIX, "Table", NS);
+                                        foreach (DataColumn col in dataTable.Columns)
+                                        {
+                                            writer.WriteStartElement(PREFIX, "Cell", NS);
+                                            writer.WriteString(row[col].ToString());
+                                            writer.WriteEndElement(); // Data
+                                        }
 
-                                ///*
-                                // * Fill column names to XML
-                                // */
-                                //writer.WriteStartElement(PREFIX, "Header", NS);
-                                //foreach (DataColumn col in dataTable.Columns)
-                                //{
-                                //    writer.WriteStartElement(PREFIX, "Cell", NS);
-                                //    writer.WriteAttributeString(PREFIX, "DataType", NS, col.DataType.ToString());
-                                //    writer.WriteString(col.ColumnName);
-                                //    writer.WriteEndElement(); // Cell
-                                //}
-                                //writer.WriteEndElement(); // Header
+                                        writer.WriteEndElement(); // Row
+                                    }
 
-                                ///*
-                                // * Fill data from DB to XML
-                                // */
-                                //foreach (DataRow row in dataTable.Rows)
-                                //{
-                                //    writer.WriteStartElement(PREFIX, "Row", NS);
+                                    writer.WriteEndElement(); // Table
 
-                                //    foreach (DataColumn col in dataTable.Columns)
-                                //    {
-                                //        writer.WriteStartElement(PREFIX, "Cell", NS);
-                                //        writer.WriteString(row[col].ToString());
-                                //        writer.WriteEndElement(); // Data
-                                //    }
-
-                                //    writer.WriteEndElement(); // Row
-                                //}
-
-                                //writer.WriteEndElement(); // Table
-
-                                #endregion
+                                }
                             }
+
+                            FTPClient ftpClient = new FTPClient(
+                                "ftp://" + schedEvent.FTPAddress,
+                                schedEvent.FTPLogin,
+                                schedEvent.FTPPassword
+                                );
+
+                            ftpClient.ChangeWorkingDirectory(schedEvent.FTPRemotePath);
+                            ftpClient.UploadFile(workingFile, schedEvent.XMLFileName + ".part");
+                            ftpClient.Rename(schedEvent.XMLFileName + ".part", schedEvent.XMLFileName);
+
+                            //FTPHelper ftp = new FTPHelper(
+                            //    "ftp://" + schedEvent.FTPAddress, 
+                            //    schedEvent.FTPLogin,
+                            //    schedEvent.FTPPassword
+                            //    );
 
                             /*
                              * Send file to FTP server
                              */
-                            FTPHelper.UploadFile(
+                            ftpClient.UploadFile(
                                 workingFile,
-                                "ftp://" + schedEvent.FTPAddress + "/" + schedEvent.XMLFileName + ".part",
-                                schedEvent.FTPLogin,
-                                schedEvent.FTPPassword
+                                Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/")
                                 );
 
                             /*
                              * and rename it
                              */
-                            FTPHelper.RenameFile(
-                                schedEvent.XMLFileName,
-                                "ftp://" + schedEvent.FTPAddress + "/" + schedEvent.XMLFileName + ".part",
-                                schedEvent.FTPLogin,
-                                schedEvent.FTPPassword
+                            ftpClient.Rename(
+                                Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/"),
+                                schedEvent.XMLFileName
                                 );
+                            //ftp.RenameFile(
+                            //    schedEvent.XMLFileName,
+                            //    "ftp://" + schedEvent.FTPAddress + "/" + schedEvent.XMLFileName + ".part",
+                            //    schedEvent.FTPLogin,
+                            //    schedEvent.FTPPassword
+                            //    );
 
                             /*
                              * Clean up worker array with events
@@ -363,14 +390,14 @@ namespace ITSharp.ScheDEX
                         {
                             //TODO: .... LOG ???
                             //Console.WriteLine("Error: " + e);
-                            LOG("ERROR: " + ex.Message);
+                            //LOG("ERROR: " + ex.Message);
 
                             /* 
                              * If we have more attempts then try again, so do not remove this event from working array
                              */
                             if (schedEvent.TryAgain)
                             {
-                                LOG("Taking another attempt");
+                                //LOG("Taking another attempt");
                             }
                             else
                             {
@@ -378,7 +405,7 @@ namespace ITSharp.ScheDEX
                                  * Clean up worker array with events
                                  */
                                 this.todoEvents.Remove(schedEvent);
-                                LOG("Give up");
+                                //LOG("Give up");
                             }
                         }
                         finally

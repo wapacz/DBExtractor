@@ -10,15 +10,30 @@ namespace ITSharp.ScheDEX.Common
 {
     public class FTPHelper
     {
-        public event EventHandler<FTPConnectionEventArgs> ConnectionEvent;
-        //public event EventHandler ConnectionUnsuccessful;
-        
-        public FTPHelper()
+        //public event EventHandler<FTPConnectionEventArgs> ConnectionEvent;
+
+        FtpWebRequest ftp;
+
+        private String address;
+        private String login;
+        private String password;
+        private String currentRemotePath;
+
+        public FTPHelper(String address, String login, String password)
         {
-            this.address = "";
-            this.login = "";
-            this.password = "";
+            this.address = address;
+            this.login = login;
+            this.password = password;
             //this.remotePath = "";
+
+            /*
+             * FTP settings to upload big files
+             */
+            //this.ftp.KeepAlive = false;
+            //this.ftp.UseBinary = true;
+            //this.ftp.UsePassive = true;
+            //this.ftp.Timeout = 10000000;
+            //this.ftp.ReadWriteTimeout = 10000000; 
         }
 
         /// <summary>
@@ -26,7 +41,7 @@ namespace ITSharp.ScheDEX.Common
         /// </summary>
         public void StartCheckConnection()
         {
-            Thread thread = new Thread(new ThreadStart(CheckConnection));
+            Thread thread = new Thread(new ThreadStart(Connect));
             thread.Name = "CheckConnection";
             thread.Start();
         }
@@ -34,29 +49,28 @@ namespace ITSharp.ScheDEX.Common
         /// <summary>
         /// Check connection to FTP 
         /// </summary>
-        private void CheckConnection()
+        public void Connect()
         {
-            FtpWebRequest ftp;
-
             try
             {
-                ftp = (FtpWebRequest)WebRequest.Create("ftp://"+this.address+"/"+this.address);
-                ftp.Credentials = new NetworkCredential(this.login, this.password);
-                ftp.Method = WebRequestMethods.Ftp.PrintWorkingDirectory;
+                this.ftp = (FtpWebRequest)WebRequest.Create("ftp://"+this.address);
+                this.ftp.Credentials = new NetworkCredential(this.login, this.password);
+                this.ftp.Method = WebRequestMethods.Ftp.PrintWorkingDirectory;
                 WebResponse wr = ftp.GetResponse();
+
                 Console.WriteLine(wr.ToString());
 
-                if (ConnectionEvent != null)
-                    ConnectionEvent(this, FTPConnectionEventArgs.Success);
+                //if (ConnectionEvent != null)
+                //    ConnectionEvent(this, FTPConnectionEventArgs.Success);
             }
             catch (Exception ex)
             {
-                if(ConnectionEvent != null)
-                    ConnectionEvent(ex.Message, FTPConnectionEventArgs.Fail);
+                //if(ConnectionEvent != null)
+                //    ConnectionEvent(ex.Message, FTPConnectionEventArgs.Fail);
             }
             finally
             {
-                //ftp.Close();
+                //ftp.Disconnect();
             }
         }
 
@@ -84,15 +98,10 @@ namespace ITSharp.ScheDEX.Common
             return response;
         }
 
-        public static void UploadFile(String localPath, String remotePath, String login, String password)
+        public void UploadFile(String localPath)
         {
-            FtpWebRequest ftp = (FtpWebRequest)WebRequest.Create(remotePath);
-            ftp.Credentials = new NetworkCredential(login, password);
-            ftp.KeepAlive = false;
-            ftp.UseBinary = true;
-            ftp.UsePassive = true;
-            ftp.Timeout = 10000000;
-            ftp.ReadWriteTimeout = 10000000; 
+            //FtpWebRequest ftp = (FtpWebRequest)WebRequest.Create(remotePath);
+            //ftp.Credentials = new NetworkCredential(login, password);
             ftp.Method = WebRequestMethods.Ftp.UploadFile;
             FileStream fs = File.OpenRead(localPath);
             byte[] buffer = new byte[fs.Length];
@@ -103,35 +112,32 @@ namespace ITSharp.ScheDEX.Common
             ftpstream.Close();
         }
 
-        public static void RenameFile(String newName, String remotePath, String login, String password)
+        public void RenameFile(String newName, String remotePath)
         {
-            FtpWebRequest ftp = (FtpWebRequest)WebRequest.Create(remotePath);
-            ftp.Credentials = new NetworkCredential(login, password);
+            //FtpWebRequest ftp = (FtpWebRequest)WebRequest.Create(remotePath);
+            //ftp.Credentials = new NetworkCredential(login, password);
             ftp.Method = WebRequestMethods.Ftp.Rename;
             ftp.RenameTo = newName;
             ftp.GetResponse();
         }
 
-        private String address;
-        public String Address
-        {
-            get { return this.address; }
-            set { this.address = value; }
-        }
+        //public String Address
+        //{
+        //    get { return this.address; }
+        //    set { this.address = value; }
+        //}
 
-        private String login;
-        public String Login
-        {
-            get { return this.login; }
-            set { this.login = value; }
-        }
+        //public String Login
+        //{
+        //    get { return this.login; }
+        //    set { this.login = value; }
+        //}
 
-        private String password;
-        public String Password
-        {
-            get { return this.password; }
-            set { this.password = value; }
-        }
+        //public String Password
+        //{
+        //    get { return this.password; }
+        //    set { this.password = value; }
+        //}
         
         //private String remotePath;
         //public String RemotePath
@@ -141,33 +147,33 @@ namespace ITSharp.ScheDEX.Common
         //}
     }
 
-    public class FTPConnectionEventArgs : EventArgs
-    {
-        private Boolean isSuccess;
-        public Boolean IsSuccess
-        {
-            get { return this.isSuccess; }
-            set { this.isSuccess = value; }
-        }
+    //public class FTPConnectionEventArgs : EventArgs
+    //{
+    //    private Boolean isSuccess;
+    //    public Boolean IsSuccess
+    //    {
+    //        get { return this.isSuccess; }
+    //        set { this.isSuccess = value; }
+    //    }
 
-        public static FTPConnectionEventArgs Success
-        {
-            get
-            {
-                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
-                args.IsSuccess = true;
-                return args;
-            }
-        }
+    //    public static FTPConnectionEventArgs Success
+    //    {
+    //        get
+    //        {
+    //            FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+    //            args.IsSuccess = true;
+    //            return args;
+    //        }
+    //    }
 
-        public static FTPConnectionEventArgs Fail
-        {
-            get
-            {
-                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
-                args.IsSuccess = false;
-                return args;
-            }
-        }
-    }
+    //    public static FTPConnectionEventArgs Fail
+    //    {
+    //        get
+    //        {
+    //            FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+    //            args.IsSuccess = false;
+    //            return args;
+    //        }
+    //    }
+    //}
 }

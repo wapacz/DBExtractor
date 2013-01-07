@@ -146,6 +146,9 @@ namespace ITSharp.ScheDEX
                 //this.settings.Save();
             //}
 
+                this.tbSQLUserName.Text = "";
+                this.tbSQLUserPass.Text = "";
+
                 this.cbDatabases.Items.Clear();
                 this.cbDatabases.Enabled = false;
                 this.lDatabase.Enabled = false;

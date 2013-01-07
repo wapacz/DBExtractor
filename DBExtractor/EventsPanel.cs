@@ -114,7 +114,7 @@ namespace ITSharp.ScheDEX
             schEv.FTPAddress = this.tbFtp.Text;
             schEv.FTPLogin = this.settings.FtpUserName; //container.ftp.Login;
             schEv.FTPPassword = this.settings.FtpUserPassword; //this.container.ftp.Password;
-            //schEv.FTPRemotePath = this.container.ftp.
+            schEv.FTPRemotePath = this.settings.FtpRemotePath;
 
             // Interval
             try
@@ -155,6 +155,11 @@ namespace ITSharp.ScheDEX
                 lbScheduleEvents.Items.Remove(toDelete);
             }
             //this.container.events.Save();
+        }
+
+        private void lbScheduleEvents_Leave(object sender, EventArgs e)
+        {
+            //this.lbScheduleEvents.SelectedItems.Clear();
         }
     }
 }

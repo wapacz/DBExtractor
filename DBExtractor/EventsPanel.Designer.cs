@@ -105,6 +105,7 @@
             this.lbScheduleEvents.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lbScheduleEvents.Size = new System.Drawing.Size(630, 217);
             this.lbScheduleEvents.TabIndex = 169;
+            this.lbScheduleEvents.Leave += new System.EventHandler(this.lbScheduleEvents_Leave);
             // 
             // bSaveScheduleEvent
             // 

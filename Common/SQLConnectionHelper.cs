@@ -101,28 +101,6 @@ FROM
 	[Kontrahenci];";
 
 
-
-//        SELECT [Oferta].*,
-//    [Magazyny].[mag_kod] AS [Magazyn],               
-//    [Oferta].[ofr_symbol] AS [Symbol],
-//    [Oferta].[ofr_nazwa] AS [Nazwa],
-//    [Oferta].[ofr_ilosc] AS [Stan magazynowy],
-//    [Oferta].[ofr_ilosc]-[Oferta].[ofr_rezerwacje] AS [Ilość do dyspozycji],
-//    [Jednostki].[jdn_kod] AS [Jm],
-//    --
-//    [Oferta].[ofr_waga] AS [Waga]
-//FROM 
-//    [Oferta]
-//INNER JOIN
-//    [Magazyny] ON [Oferta].[ofr_magazyn] = [Magazyny].[mag_id]
-//INNER JOIN
-//    [Jednostki] ON [Oferta].[ofr_jednostka] = [Jednostki].[jdn_id]
-
-//WHERE
-//    [Oferta].[ofr_symbol] = '00037097';
-
-
-
         public SQLConnectionHelper()
         {
             this.serverNames = new ArrayList();
