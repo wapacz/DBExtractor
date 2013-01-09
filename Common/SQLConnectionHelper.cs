@@ -115,27 +115,27 @@ FROM
 
             this.queries.Add("Dane kontrahentów (+ kwota niezapłaconych faktur)",
 @"SELECT 
-		[Kontrahenci].[knt_id] AS [Id],
-		[Kontrahenci].[knt_kod] AS [Kod],
-		[Kontrahenci].[knt_nazwa] AS [Nazwa],
-		[Kontrahenci].[knt_nip] AS [NIP],
-		[Kontrahenci].[knt_email] AS [Email],
-		[Kontrahenci].[knt_kredyt] AS [Limit kredytowy],
-		[Kontrahenci].[knt_konto_ma]-[Kontrahenci].[knt_konto_wn] AS [Aktualny stan konta],
-		[DOK_SUM].[kwota pozostała do zapłaty] AS [Kwota pozostała do zapłaty]
-	FROM
-		[Kontrahenci]	
-	INNER JOIN
-		(SELECT
-			[Rozliczenia].[roz_knt] AS [roz_knt],
-			SUM(ISNULL([Rozliczenia].[roz_kwota_wn], 0)) 
-			-SUM(ISNULL([Rozliczenia].[roz_kwota_ma], 0)) AS [kwota pozostała do zapłaty]
-		FROM 
-			[Rozliczenia]
-		GROUP BY 
-			[Rozliczenia].[roz_knt]
-		)[DOK_SUM]
-		ON [DOK_SUM].[roz_knt] = [Kontrahenci].[knt_id];"
+	[Kontrahenci].[knt_id] AS [Id],
+	[Kontrahenci].[knt_kod] AS [Kod],
+	[Kontrahenci].[knt_nazwa] AS [Nazwa],
+	[Kontrahenci].[knt_nip] AS [NIP],
+	[Kontrahenci].[knt_email] AS [Email],
+	[Kontrahenci].[knt_kredyt] AS [Limit kredytowy],
+	[Kontrahenci].[knt_konto_ma]-[Kontrahenci].[knt_konto_wn] AS [Aktualny stan konta],
+	ISNULL([DOK_SUM].[kwota pozostała do zapłaty], 0) AS [Kwota pozostała do zapłaty]
+FROM
+	[Kontrahenci]	
+LEFT JOIN
+	(SELECT
+		[Rozliczenia].[roz_knt] AS [roz_knt],
+		SUM(ISNULL([Rozliczenia].[roz_kwota_wn], 0)) 
+		-SUM(ISNULL([Rozliczenia].[roz_kwota_ma], 0)) AS [kwota pozostała do zapłaty]
+	FROM 
+		[Rozliczenia]
+	GROUP BY 
+		[Rozliczenia].[roz_knt]
+	)[DOK_SUM]
+	ON [DOK_SUM].[roz_knt] = [Kontrahenci].[knt_id];"
                 );
 
             this.queries.Add("Niezapłacone faktury",
