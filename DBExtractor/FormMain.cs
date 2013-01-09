@@ -120,23 +120,6 @@ namespace ITSharp.ScheDEX
             this.splitContainer.Panel2.Controls.Add(this.serviceP);
 
             /*
-             * Initialize events related issues
-             */
-
-
-            /*
-             * Initialize SQL connection related issues
-             */
-            //this.sql.ConnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_ConnectionEvent);
-            //this.sql.DisconnectionEvent += new EventHandler<SQLConnectionEventArgs>(sql_DisconnectionEvent);
-            //this.sql.ServerNamesHasBeenFetched += new EventHandler(sql_ServerNamesHasBeenFetched);
-
-            /*
-             * Initialize FTP related issues
-             */
-
-
-            /*
              * Service controler related issues
              */
             this.service.ServiceStatusChangedEvent += new EventHandler<ServiceStatusEventArgs>(service_ServiceStatusEventArgs);
@@ -160,22 +143,9 @@ namespace ITSharp.ScheDEX
             this.leftSideImages[this.llServiceConfig.Name] = global::ScheDEX.Properties.Resources.kservices_128x128;
         }
 
-        private void FormMain_Load(object sender, EventArgs e)
-        {
-
-
-
-            // Interval
-            //UNDO//this.tbInterval.Text = this.settings.Interval.ToString();
-
-            // Events
-            //UNDO//this.lbScheduleEvents.Items.AddRange(this.events.ToArray());
-        }
-
         public void ProcessScan()
         {
             //this.statusBarLabel.Text = "Szukam instancji MSSQL...";
-
             this.sqlP.ProcessScan();
         }
 
@@ -185,31 +155,13 @@ namespace ITSharp.ScheDEX
             {
                 this.notifyIcon1.Text = "ScheDEX\nUsługa pracuje prawidłowo.";
                 this.notifyIcon1.ShowBalloonTip(5000, "Informacja", "Usługa ScheDEX pracuje prawidłowo.", ToolTipIcon.Info);
-                //this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("28461-ico-alarm-clock-icon.ico")));
             }
             else
             {
                 this.notifyIcon1.Text = "ScheDEX\nUsługa nie pracuje.";
                 this.notifyIcon1.ShowBalloonTip(5000, "Ostrzeżenie", "Wykryto, że usługa ScheDEX nie pracuje prawidłowo.", ToolTipIcon.Warning);
-                //this.notifyIcon1.Icon = global::ScheDEX.Properties.Resources.
             }
         }
-
-        //private void sql_ServerNamesHasBeenFetched(object sender, EventArgs args)
-        //{
-        //    //this.statusBarLabel.InvokeIfRequired(() =>
-        //    //{
-        //        this.statusBarLabel.Text = "";
-        //    //});
-        //}
-
-        //private void sql_ConnectionEvent(object sender, SQLConnectionEventArgs args)
-        //{
-        //    //this.statusBarLabel.InvokeIfRequired(() =>
-        //    //{
-        //        this.statusBarLabel.Text = "";
-        //    //});
-        //}
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -227,20 +179,6 @@ namespace ITSharp.ScheDEX
             this.WindowState = FormWindowState.Normal;
             this.Show();
         }
-
-        //private void buttonSave_Click(object sender, EventArgs e)
-        //{
-        //    this.settings.Save();
-        //    Console.WriteLine("Serialzuje obiekt do pliku");
-
-        //    //this.notifyIcon1.BalloonTipText = "hello";
-        //    this.notifyIcon1.ShowBalloonTip(3000, "Title1", "Text", ToolTipIcon.Info);
-
-        //    System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-        //    this.notifyIcon1.Icon = ((System.Drawing.Icon)resources.GetObject("alarmClock.Icon"));
-
-        //    //this.pictureBox1.Hide();
-        //}
 
         private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {

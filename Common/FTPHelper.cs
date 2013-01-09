@@ -1,72 +1,79 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
 using System.IO;
-using System.Threading;
+using System.Net;
 
 namespace ITSharp.ScheDEX.Common
 {
-    public class FTPHelper
+    public class FTPClient
     {
-        //public event EventHandler<FTPConnectionEventArgs> ConnectionEvent;
+        public event EventHandler<FTPConnectionEventArgs> ConnectionEvent;
 
-        FtpWebRequest ftp;
+        private string password;
+        private string userName;
+        private string uri;
+        private int bufferSize = 1024;
 
-        private String address;
-        private String login;
-        private String password;
-        private String currentRemotePath;
+        public bool Passive = true;
+        public bool Binary = true;
+        public bool EnableSsl = false;
+        public bool Hash = false;
+        public bool KeepAlive = false;
+        public int Timeout = 10000000;
+        public int ReadWriteTimeout = 10000000;
 
-        public FTPHelper(String address, String login, String password)
+        public FTPClient(string uri, string userName, string password)
         {
-            this.address = address;
-            this.login = login;
+            this.uri = uri;
+            this.userName = userName;
             this.password = password;
-            //this.remotePath = "";
-
-            /*
-             * FTP settings to upload big files
-             */
-            //this.ftp.KeepAlive = false;
-            //this.ftp.UseBinary = true;
-            //this.ftp.UsePassive = true;
-            //this.ftp.Timeout = 10000000;
-            //this.ftp.ReadWriteTimeout = 10000000; 
         }
 
-        /// <summary>
-        /// Starts thread which start CheckConnection method
-        /// </summary>
-        public void StartCheckConnection()
+        public void VerifyConnection(String path)
         {
-            Thread thread = new Thread(new ThreadStart(Connect));
-            thread.Name = "CheckConnection";
-            thread.Start();
-        }
-
-        /// <summary>
-        /// Check connection to FTP 
-        /// </summary>
-        public void Connect()
-        {
+            Boolean found;
+            string[] dirList;
             try
             {
-                this.ftp = (FtpWebRequest)WebRequest.Create("ftp://"+this.address);
-                this.ftp.Credentials = new NetworkCredential(this.login, this.password);
-                this.ftp.Method = WebRequestMethods.Ftp.PrintWorkingDirectory;
-                WebResponse wr = ftp.GetResponse();
+                if (path == "")
+                {
+                    path = ".";
+                }
 
-                Console.WriteLine(wr.ToString());
+                var separator = new char[] { '\\', '/' };
+                foreach (String directory in path.Split(separator))
+                {
+                    found = false;
+                    dirList = this.ListDirectory();
+                    foreach (string dir in dirList)
+                    {
+                        if (dir.Equals(directory))
+                        {
+                            found = true;
+                            //break;
+                        }
+                    }
+                    if (found)
+                    {
+                        this.ChangeWorkingDirectory(directory);
+                    }
+                    else
+                    {
+                        // dir not found
+                        if (ConnectionEvent != null)
+                            ConnectionEvent(this, FTPConnectionEventArgs.SuccessWithProblems);
+                        return;
+                    }
+                }
 
-                //if (ConnectionEvent != null)
-                //    ConnectionEvent(this, FTPConnectionEventArgs.Success);
+
+                if (ConnectionEvent != null)
+                    ConnectionEvent(this, FTPConnectionEventArgs.Success);
             }
             catch (Exception ex)
             {
-                //if(ConnectionEvent != null)
-                //    ConnectionEvent(ex.Message, FTPConnectionEventArgs.Fail);
+                if (ConnectionEvent != null)
+                    ConnectionEvent(ex.Message, FTPConnectionEventArgs.Fail);
             }
             finally
             {
@@ -74,106 +81,328 @@ namespace ITSharp.ScheDEX.Common
             }
         }
 
-        public String FetchRemoteFiles()
+        public string AppendFile(string source, string destination)
         {
-            String response = "";
+            var request = createRequest(combine(uri, destination), WebRequestMethods.Ftp.AppendFile);
 
-            FtpWebRequest ftp = (FtpWebRequest)WebRequest.Create(this.address);
-            ftp.Credentials = new NetworkCredential(this.login, this.password);
-            ftp.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
+            using (var stream = request.GetRequestStream())
+            {
+                using (var fileStream = System.IO.File.Open(source, FileMode.Open))
+                {
+                    int num;
 
-            ftp.KeepAlive = false;
+                    byte[] buffer = new byte[bufferSize];
 
-            FtpWebResponse ftpResponse = (FtpWebResponse)ftp.GetResponse();
+                    while ((num = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        if (Hash)
+                            Console.Write("#");
 
-            StreamReader sr = new StreamReader(ftpResponse.GetResponseStream());
-            //StreamWriter sw = new StreamWriter(new FileStream(fileName, FileMode.Create));
+                        stream.Write(buffer, 0, num);
+                    }
+                }
+            }
 
-            response = sr.ReadToEnd();
-            //sw.Close();
-
-            ftpResponse.Close();
-            sr.Close();
-
-            return response;
+            return getStatusDescription(request);
         }
 
-        public void UploadFile(String localPath)
+        public string ChangeWorkingDirectory(string path)
         {
-            //FtpWebRequest ftp = (FtpWebRequest)WebRequest.Create(remotePath);
-            //ftp.Credentials = new NetworkCredential(login, password);
-            ftp.Method = WebRequestMethods.Ftp.UploadFile;
-            FileStream fs = File.OpenRead(localPath);
-            byte[] buffer = new byte[fs.Length];
-            fs.Read(buffer, 0, buffer.Length);
-            fs.Close();
-            Stream ftpstream = ftp.GetRequestStream();
-            ftpstream.Write(buffer, 0, buffer.Length);
-            ftpstream.Close();
+            uri = combine(uri, path);
+
+            return PrintWorkingDirectory();
         }
 
-        public void RenameFile(String newName, String remotePath)
+        public string DeleteFile(string fileName)
         {
-            //FtpWebRequest ftp = (FtpWebRequest)WebRequest.Create(remotePath);
-            //ftp.Credentials = new NetworkCredential(login, password);
-            ftp.Method = WebRequestMethods.Ftp.Rename;
-            ftp.RenameTo = newName;
-            ftp.GetResponse();
+            var request = createRequest(combine(uri, fileName), WebRequestMethods.Ftp.DeleteFile);
+
+            return getStatusDescription(request);
         }
 
-        //public String Address
-        //{
-        //    get { return this.address; }
-        //    set { this.address = value; }
-        //}
+        public string DownloadFile(string source, string dest)
+        {
+            var request = createRequest(combine(uri, source), WebRequestMethods.Ftp.DownloadFile);
 
-        //public String Login
-        //{
-        //    get { return this.login; }
-        //    set { this.login = value; }
-        //}
+            byte[] buffer = new byte[bufferSize];
 
-        //public String Password
-        //{
-        //    get { return this.password; }
-        //    set { this.password = value; }
-        //}
-        
-        //private String remotePath;
-        //public String RemotePath
-        //{
-        //    get { return this.remotePath; }
-        //    set { this.remotePath = value; }
-        //}
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var fs = new FileStream(dest, FileMode.OpenOrCreate))
+                    {
+                        int readCount = stream.Read(buffer, 0, bufferSize);
+
+                        while (readCount > 0)
+                        {
+                            if (Hash)
+                                Console.Write("#");
+
+                            fs.Write(buffer, 0, readCount);
+                            readCount = stream.Read(buffer, 0, bufferSize);
+                        }
+                    }
+                }
+
+                return response.StatusDescription;
+            }
+        }
+
+        public DateTime GetDateTimestamp(string fileName)
+        {
+            var request = createRequest(combine(uri, fileName), WebRequestMethods.Ftp.GetDateTimestamp);
+
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                return response.LastModified;
+            }
+        }
+
+        public long GetFileSize(string fileName)
+        {
+            var request = createRequest(combine(uri, fileName), WebRequestMethods.Ftp.GetFileSize);
+
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                return response.ContentLength;
+            }
+        }
+
+        public string[] ListDirectory()
+        {
+            var list = new List<string>();
+
+            var request = createRequest(WebRequestMethods.Ftp.ListDirectory);
+
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(stream, true))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            list.Add(reader.ReadLine());
+                        }
+                    }
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        public string[] ListDirectoryDetails()
+        {
+            var list = new List<string>();
+
+            var request = createRequest(WebRequestMethods.Ftp.ListDirectoryDetails);
+
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(stream, true))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            list.Add(reader.ReadLine());
+                        }
+                    }
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        public string MakeDirectory(string directoryName)
+        {
+            var request = createRequest(combine(uri, directoryName), WebRequestMethods.Ftp.MakeDirectory);
+
+            return getStatusDescription(request);
+        }
+
+        public string[] PrintMyWorkingDirectory()
+        {
+            var list = new List<string>();
+
+            var request = createRequest(WebRequestMethods.Ftp.PrintWorkingDirectory);
+
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                using (var stream = response.GetResponseStream())
+                {
+                    using (var reader = new StreamReader(stream, true))
+                    {
+                        while (!reader.EndOfStream)
+                        {
+                            list.Add(reader.ReadLine());
+                        }
+                    }
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        public string PrintWorkingDirectory()
+        {
+            var request = createRequest(WebRequestMethods.Ftp.PrintWorkingDirectory);
+
+            return getStatusDescription(request);
+        }
+
+        public string RemoveDirectory(string directoryName)
+        {
+            var request = createRequest(combine(uri, directoryName), WebRequestMethods.Ftp.RemoveDirectory);
+
+            return getStatusDescription(request);
+        }
+
+        public string Rename(string currentName, string newName)
+        {
+            var request = createRequest(combine(uri, currentName), WebRequestMethods.Ftp.Rename);
+
+            request.RenameTo = newName;
+
+            return getStatusDescription(request);
+        }
+
+        public string UploadFile(string source, string destination)
+        {
+            var request = createRequest(combine(uri, destination), WebRequestMethods.Ftp.UploadFile);
+
+            using (var stream = request.GetRequestStream())
+            {
+                using (var fileStream = System.IO.File.Open(source, FileMode.Open))
+                {
+                    int num;
+
+                    byte[] buffer = new byte[bufferSize];
+
+                    while ((num = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        if (Hash)
+                            Console.Write("#");
+
+                        stream.Write(buffer, 0, num);
+                    }
+                }
+            }
+
+            return getStatusDescription(request);
+        }
+
+        public string UploadFileWithUniqueName(string source)
+        {
+            var request = createRequest(WebRequestMethods.Ftp.UploadFileWithUniqueName);
+
+            using (var stream = request.GetRequestStream())
+            {
+                using (var fileStream = System.IO.File.Open(source, FileMode.Open))
+                {
+                    int num;
+
+                    byte[] buffer = new byte[bufferSize];
+
+                    while ((num = fileStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        if (Hash)
+                            Console.Write("#");
+
+                        stream.Write(buffer, 0, num);
+                    }
+                }
+            }
+
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                return Path.GetFileName(response.ResponseUri.ToString());
+            }
+        }
+
+        private FtpWebRequest createRequest(string method)
+        {
+            return createRequest(uri, method);
+        }
+
+        private FtpWebRequest createRequest(string uri, string method)
+        {
+            var r = (FtpWebRequest)WebRequest.Create(uri);
+
+            r.Credentials = new NetworkCredential(userName, password);
+            r.Method = method;
+            r.UseBinary = Binary;
+            r.EnableSsl = EnableSsl;
+            r.UsePassive = Passive;
+            r.KeepAlive = KeepAlive;
+            r.Timeout = Timeout;
+            r.ReadWriteTimeout = ReadWriteTimeout;
+
+            return r;
+        }
+
+        private string getStatusDescription(FtpWebRequest request)
+        {
+            using (var response = (FtpWebResponse)request.GetResponse())
+            {
+                return response.StatusDescription;
+            }
+        }
+
+        private string combine(string path1, string path2)
+        {
+            return Path.Combine(path1, path2).Replace("\\", "/");
+        }
     }
 
-    //public class FTPConnectionEventArgs : EventArgs
-    //{
-    //    private Boolean isSuccess;
-    //    public Boolean IsSuccess
-    //    {
-    //        get { return this.isSuccess; }
-    //        set { this.isSuccess = value; }
-    //    }
+    public class FTPConnectionEventArgs : EventArgs
+    {
+        private Boolean isSuccess;
+        public Boolean IsSuccess
+        {
+            get { return this.isSuccess; }
+            //set { this.isSuccess = value; }
+        }
 
-    //    public static FTPConnectionEventArgs Success
-    //    {
-    //        get
-    //        {
-    //            FTPConnectionEventArgs args = new FTPConnectionEventArgs();
-    //            args.IsSuccess = true;
-    //            return args;
-    //        }
-    //    }
+        private Boolean isDirectoryExists;
+        public Boolean IsDirectoryExists
+        {
+            get { return this.isDirectoryExists; }
+            //set { this.isSuccess = value; }
+        }
 
-    //    public static FTPConnectionEventArgs Fail
-    //    {
-    //        get
-    //        {
-    //            FTPConnectionEventArgs args = new FTPConnectionEventArgs();
-    //            args.IsSuccess = false;
-    //            return args;
-    //        }
-    //    }
-    //}
+        public static FTPConnectionEventArgs Success
+        {
+            get
+            {
+                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+                args.isSuccess = true;
+                args.isDirectoryExists = true;
+                return args;
+            }
+        }
+
+        public static FTPConnectionEventArgs SuccessWithProblems
+        {
+            get
+            {
+                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+                args.isSuccess = true;
+                args.isDirectoryExists = false;
+                return args;
+            }
+        }
+
+        public static FTPConnectionEventArgs Fail
+        {
+            get
+            {
+                FTPConnectionEventArgs args = new FTPConnectionEventArgs();
+                args.isSuccess = false;
+                args.isDirectoryExists = false;
+                return args;
+            }
+        }
+    }
 }

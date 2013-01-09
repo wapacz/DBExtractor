@@ -58,7 +58,10 @@ namespace ITSharp.ScheDEX
             /*
              * FTP server
              */
-            this.tbFtp.Text = this.settings.FtpAddress;
+            this.tbFtp.Text = String.Format("{0} ({1})",
+                this.settings.FtpAddress,
+                this.settings.FtpRemotePath
+                );
 
             /*
              * Interval
@@ -111,7 +114,7 @@ namespace ITSharp.ScheDEX
                 MessageBox.Show("Należy skonfigurować połaczenie FTP.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-            schEv.FTPAddress = this.tbFtp.Text;
+            schEv.FTPAddress = this.settings.FtpAddress; //this.tbFtp.Text;
             schEv.FTPLogin = this.settings.FtpUserName; //container.ftp.Login;
             schEv.FTPPassword = this.settings.FtpUserPassword; //this.container.ftp.Password;
             schEv.FTPRemotePath = this.settings.FtpRemotePath;
@@ -145,6 +148,71 @@ namespace ITSharp.ScheDEX
             this.container.events.Add(schEv);
             //this.container.events.Save();
         }
+        
+        private void bUpdateScheduleEvent_Click(object sender, EventArgs e)
+        {
+            int index = this.lbScheduleEvents.SelectedIndex;
+
+            ScheduleEvent schEv = (ScheduleEvent)this.lbScheduleEvents.SelectedItem;
+
+            // SQL
+            if (this.cbDBConnections.Text.Equals(""))
+            {
+                MessageBox.Show("Należy wybrać połączenie z bazą danych.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            schEv.SQLConnectionString = this.settings.SqlConnectionStrings[this.cbDBConnections.Text];
+
+            // Query
+            if (this.cbQuery.Text.Equals(""))
+            {
+                MessageBox.Show("Należy wybrać kwerendę.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            schEv.SQLQuery = this.container.sql.Queries[this.cbQuery.Text];
+            schEv.SQLQueryName = this.cbQuery.Text;
+
+            // FTP
+            if (this.tbFtp.Text.Equals(""))
+            {
+                MessageBox.Show("Należy skonfigurować połaczenie FTP.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            schEv.FTPAddress = this.settings.FtpAddress; //this.tbFtp.Text;
+            schEv.FTPLogin = this.settings.FtpUserName; //container.ftp.Login;
+            schEv.FTPPassword = this.settings.FtpUserPassword; //this.container.ftp.Password;
+            schEv.FTPRemotePath = this.settings.FtpRemotePath;
+
+            // Interval
+            try
+            {
+                schEv.Interval = uint.Parse(this.tbInterval.Text);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Interwał musi być liczbą.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // XML file name
+            if (this.tbXMLFileName.Text.Equals("") || !this.tbXMLFileName.Text.EndsWith(".xml") || this.tbXMLFileName.Text.Length <= 4)
+            {
+                MessageBox.Show("Należy podać nazwę pliku z rozszerzeniem xml.", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            schEv.XMLFileName = this.tbXMLFileName.Text;
+
+            this.settings.SqlConnectionKey = this.cbDBConnections.Text;
+            this.settings.SqlQueryName = this.cbQuery.Text;
+            this.settings.Interval = uint.Parse(this.tbInterval.Text);
+            this.settings.XmlFileName = this.tbXMLFileName.Text;
+            this.settings.Save();
+
+            this.lbScheduleEvents.Items.RemoveAt(index);
+            this.lbScheduleEvents.Items.Insert(index, schEv);
+            //this.container.events.Add(schEv);
+            //this.container.events.Save();
+        }
 
         private void bRemoveScheduleEvent_Click(object sender, EventArgs e)
         {
@@ -160,6 +228,65 @@ namespace ITSharp.ScheDEX
         private void lbScheduleEvents_Leave(object sender, EventArgs e)
         {
             //this.lbScheduleEvents.SelectedItems.Clear();
+            //this.bUpdateScheduleEvent.Enabled = false;
+            //this.bRemoveScheduleEvent.Enabled = false;
+        }
+
+        private void lbScheduleEvents_Enter(object sender, EventArgs e)
+        {
+            this.bUpdateScheduleEvent.Enabled = true;
+            this.bRemoveScheduleEvent.Enabled = true;
+        }
+
+        private void panel3_Click(object sender, EventArgs e)
+        {
+            this.lbScheduleEvents.SelectedItems.Clear();
+            this.bUpdateScheduleEvent.Enabled = false;
+            this.bRemoveScheduleEvent.Enabled = false;
+        }
+
+        private void lbScheduleEvents_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            this.bUpdateScheduleEvent.Enabled = true;
+            this.bRemoveScheduleEvent.Enabled = true;
+
+            ScheduleEvent selectedEvent = (ScheduleEvent)this.lbScheduleEvents.SelectedItem;
+
+            if (selectedEvent != null)
+            {
+                /*
+                 * SQL connections
+                 */
+                this.cbDBConnections.Text = "";
+                foreach (var pair in this.settings.SqlConnectionStrings)
+                {
+                    if (pair.Value == selectedEvent.SQLConnectionString)
+                    {
+                        this.cbDBConnections.Text = pair.Key;
+                        break;
+                    }
+                }
+
+                /*
+                 * Query
+                 */
+                this.cbQuery.Text = selectedEvent.SQLQueryName;
+
+                /*
+                 * FTP server
+                 */
+                // cannot be changed just like that
+
+                /*
+                 * Interval
+                 */
+                this.tbInterval.Text = selectedEvent.Interval.ToString();
+
+                /*
+                 * File
+                 */
+                this.tbXMLFileName.Text = selectedEvent.XMLFileName;
+            }
         }
     }
 }

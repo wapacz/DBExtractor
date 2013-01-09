@@ -47,6 +47,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tbFtp = new System.Windows.Forms.TextBox();
             this.panel4 = new System.Windows.Forms.Panel();
+            this.bUpdateScheduleEvent = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -102,14 +103,15 @@
             this.lbScheduleEvents.Location = new System.Drawing.Point(0, 0);
             this.lbScheduleEvents.Margin = new System.Windows.Forms.Padding(15);
             this.lbScheduleEvents.Name = "lbScheduleEvents";
-            this.lbScheduleEvents.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lbScheduleEvents.Size = new System.Drawing.Size(630, 217);
             this.lbScheduleEvents.TabIndex = 169;
+            this.lbScheduleEvents.SelectedIndexChanged += new System.EventHandler(this.lbScheduleEvents_SelectedIndexChanged);
+            this.lbScheduleEvents.Enter += new System.EventHandler(this.lbScheduleEvents_Enter);
             this.lbScheduleEvents.Leave += new System.EventHandler(this.lbScheduleEvents_Leave);
             // 
             // bSaveScheduleEvent
             // 
-            this.bSaveScheduleEvent.Location = new System.Drawing.Point(358, 207);
+            this.bSaveScheduleEvent.Location = new System.Drawing.Point(222, 207);
             this.bSaveScheduleEvent.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bSaveScheduleEvent.Name = "bSaveScheduleEvent";
             this.bSaveScheduleEvent.Size = new System.Drawing.Size(130, 27);
@@ -120,6 +122,7 @@
             // 
             // bRemoveScheduleEvent
             // 
+            this.bRemoveScheduleEvent.Enabled = false;
             this.bRemoveScheduleEvent.Location = new System.Drawing.Point(490, 207);
             this.bRemoveScheduleEvent.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
             this.bRemoveScheduleEvent.Name = "bRemoveScheduleEvent";
@@ -181,6 +184,7 @@
             this.panel3.Controls.Add(this.tbFtp);
             this.panel3.Controls.Add(this.tbXMLFileName);
             this.panel3.Controls.Add(this.lFileName);
+            this.panel3.Controls.Add(this.bUpdateScheduleEvent);
             this.panel3.Controls.Add(this.bSaveScheduleEvent);
             this.panel3.Controls.Add(this.bRemoveScheduleEvent);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
@@ -188,6 +192,7 @@
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(632, 247);
             this.panel3.TabIndex = 172;
+            this.panel3.Click += new System.EventHandler(this.panel3_Click);
             // 
             // cbQuery
             // 
@@ -257,6 +262,18 @@
             this.panel4.Size = new System.Drawing.Size(632, 219);
             this.panel4.TabIndex = 173;
             // 
+            // bUpdateScheduleEvent
+            // 
+            this.bUpdateScheduleEvent.Enabled = false;
+            this.bUpdateScheduleEvent.Location = new System.Drawing.Point(356, 207);
+            this.bUpdateScheduleEvent.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+            this.bUpdateScheduleEvent.Name = "bUpdateScheduleEvent";
+            this.bUpdateScheduleEvent.Size = new System.Drawing.Size(130, 27);
+            this.bUpdateScheduleEvent.TabIndex = 167;
+            this.bUpdateScheduleEvent.Text = "Aktualizuj zdarzenie";
+            this.bUpdateScheduleEvent.UseVisualStyleBackColor = true;
+            this.bUpdateScheduleEvent.Click += new System.EventHandler(this.bUpdateScheduleEvent_Click);
+            // 
             // EventsPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -301,5 +318,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbFtp;
         private System.Windows.Forms.Panel panel4;
+        private System.Windows.Forms.Button bUpdateScheduleEvent;
     }
 }

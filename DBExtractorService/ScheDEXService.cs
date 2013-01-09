@@ -11,7 +11,6 @@ using System.Data;
 using System.Xml;
 using Microsoft.Win32;
 using ITSharp.ScheDEX.Common;
-using ITSharp.Helpers.FTP;
 
 namespace ITSharp.ScheDEX
 {
@@ -19,31 +18,28 @@ namespace ITSharp.ScheDEX
     {
         private static readonly string WorkingDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ScheDEX");
         private static readonly string EventsFilePath = Path.Combine(WorkingDir, "events.bin");
-        //private string workingDir = ".";
-        //private string eventsFilePath = ".";
 
         private Thread mainThread, workerThread;
         private Boolean forever;
         private ScheduleEventList events, todoEvents;
-        //private string workingDir;
 
         private static string PREFIX = @"xls";
         private static string NS = @"urn:schemas-microsoft-com:office:spreadsheet";
-        //private static readonly string PREFIX = null;
-        //private static readonly string NS = null;
 
         public ScheDEXService()
         {
             InitializeComponent();
         }
 
-        //private void LOG(String msg)
-        //{
-        //    System.IO.File.AppendAllText(
-        //        @"c:\service.log",
-        //        String.Format("[{0}] {1}\n", DateTime.Now.ToString(), msg)
-        //        );
-        //}
+#if DEBUG
+        private void LOG(String msg)
+        {
+            System.IO.File.AppendAllText(
+                @"c:\service.log",
+                String.Format("[{0}] {1}\n", DateTime.Now.ToString(), msg)
+                );
+        }
+#endif
 
         private void InitializeComponent()
         {
@@ -71,39 +67,32 @@ namespace ITSharp.ScheDEX
         /// </summary>
         protected override void OnStart(string[] args)
         {
-            //LOG("Starting service");
-
-            ////LOG("CommonAppData: " + Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
-            //LOG("Working dir: " + WorkingDir);
-            //LOG("Events file: " + EventsFilePath);
+#if DEBUG
+            LOG("Starting service");
+            LOG("Working dir: " + WorkingDir);
+            LOG("Events file: " + EventsFilePath);
+#endif
 
             base.OnStart(args);
-
-
 
             this.events = ScheduleEventList.Load(EventsFilePath);
             this.todoEvents = new ScheduleEventList();
 
             this.mainThread = new Thread(new ThreadStart(MainThread));
-            //this.mainThread.Priority = ThreadPriority.BelowNormal;
             this.mainThread.Name = "MainThread";
 
             this.workerThread = new Thread(new ThreadStart(WorkerThread));
-            //this.workerThread.Priority = ThreadPriority.BelowNormal;
             this.workerThread.Name = "WorkerThread";
 
             this.forever = true;
             this.mainThread.Start();
             this.workerThread.Start();
 
-
-
-
-
-            //LOG("Reading events");
-            //foreach (ScheduleEvent schedEvent in this.events)
-                //LOG(" - ScheduleEvent: " + schedEvent.XMLFileName + "(every " + schedEvent.Interval + " minute(s)");
-
+#if DEBUG
+            LOG("Reading events");
+            foreach (ScheduleEvent schedEvent in this.events)
+                LOG(" - ScheduleEvent: " + schedEvent.XMLFileName + "(every " + schedEvent.Interval + " minute(s)");
+#endif
 
             /*
              * Start all events on the begining
@@ -122,13 +111,17 @@ namespace ITSharp.ScheDEX
         /// </summary>
         protected override void OnStop()
         {
-            //LOG("Stoping service");
+#if DEBUG
+            LOG("Stoping service");
+#endif
 
             this.forever = false;
-            //this.Stop();
+
             base.OnStop();
 
-            //LOG("Service stoped");
+#if DEBUG
+            LOG("Service stoped");
+#endif
         }
 
 
@@ -148,25 +141,23 @@ namespace ITSharp.ScheDEX
                 {
                     this.todoEvents.Add(new ScheduleEventWrapper(schedEvent));
                 }
-                //LOG("New events loaded...");
+#if DEBUG
+                LOG("New events loaded...");
+#endif
             }
         }
 
 
         protected void MainThread()
         {
-            //LOG("Begin of MainThread");
+#if DEBUG
+            LOG("Begin of MainThread");
+#endif
 
             int currentMinutes = 0;
-            //foreach (ScheduleEvent schedEvent in this.events)
-            //{
-            //    System.IO.File.WriteAllText(@"c:\connectionString.txt", schedEvent.SQLConnectionString);
-            //}
 
             while (this.forever)
             {
-                ////LOG("LOOP in MainThread");
-
                 currentMinutes = DateTime.Now.Hour * 60 + DateTime.Now.Minute;
 
                 foreach (ScheduleEvent schedEvent in this.events)
@@ -174,7 +165,10 @@ namespace ITSharp.ScheDEX
                     if (currentMinutes % schedEvent.Interval == 0 && DateTime.Now.Second == 0)
                     {
                         this.todoEvents.Add(new ScheduleEventWrapper(schedEvent));
-                        //LOG("ScheduleEvent added to queue: " + schedEvent.XMLFileName);
+
+#if DEBUG
+                        LOG("ScheduleEvent added to queue: " + schedEvent.XMLFileName);
+#endif
                     }
                 }
                 Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -183,24 +177,26 @@ namespace ITSharp.ScheDEX
 
         protected void WorkerThread()
         {
-            // setup DOTs instead of COMMAs
+            // setup DOTs instead of COMMAs for this thread
             System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 
             string workingFile;
 
-            //LOG("Begin of WorkerThread");
+#if DEBUG
+            LOG("Begin of WorkerThread");
+#endif
 
             while (this.forever)
             {
-                ////LOG("LOOP in WorkerThread");
-
                 foreach (ScheduleEventWrapper schedEvent in new ArrayList(this.todoEvents))
                 {
                     schedEvent.IncreaseAttemptCounter();
 
-                    //LOG("Working with ScheduleEvent: " + schedEvent.XMLFileName);
+#if DEBUG
+                    LOG("Working with ScheduleEvent: " + schedEvent.XMLFileName);
+#endif
 
                     using (SqlConnection sqlConnection = new SqlConnection(schedEvent.SQLConnectionString))
                     {
@@ -216,15 +212,16 @@ namespace ITSharp.ScheDEX
                             DataTable dataTable = new DataTable();
                             dataAdapter.Fill(dataTable);
 
+                            XmlWriterSettings xmlWS = new XmlWriterSettings();
+
                             /*
                              * Start creating XML file
                              */
-                            XmlWriterSettings xmlWS = new XmlWriterSettings();
-                            xmlWS.Encoding = new ASCIIEncoding(); //Encoding.UTF8;
-
-                            using (XmlWriter writer = XmlWriter.Create(workingFile, xmlWS))
+                            if (schedEvent.SQLQueryName == "Kartoteki")
                             {
-                                if (schedEvent.SQLQueryName == "Kartoteki")
+                                xmlWS.Encoding = new ASCIIEncoding(); //Encoding.UTF8;
+
+                                using (XmlWriter writer = XmlWriter.Create(workingFile, xmlWS))
                                 {
                                     PREFIX = @"xls";
                                     NS = @"urn:schemas-microsoft-com:office:spreadsheet";
@@ -298,7 +295,12 @@ namespace ITSharp.ScheDEX
                                     writer.WriteEndElement();
                                     writer.WriteEndDocument();
                                 }
-                                else
+                            }
+                            else  // simpler XML version for rest of queries
+                            {
+                                xmlWS.Encoding = Encoding.UTF8;
+
+                                using (XmlWriter writer = XmlWriter.Create(workingFile, xmlWS))
                                 {
                                     PREFIX = null;
                                     NS = null;
@@ -353,32 +355,20 @@ namespace ITSharp.ScheDEX
                             ftpClient.UploadFile(workingFile, schedEvent.XMLFileName + ".part");
                             ftpClient.Rename(schedEvent.XMLFileName + ".part", schedEvent.XMLFileName);
 
-                            //FTPHelper ftp = new FTPHelper(
-                            //    "ftp://" + schedEvent.FTPAddress, 
-                            //    schedEvent.FTPLogin,
-                            //    schedEvent.FTPPassword
+                            ///*
+                            // * Send file to FTP server
+                            // */
+                            //ftpClient.UploadFile(
+                            //    workingFile,
+                            //    Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/")
                             //    );
 
-                            /*
-                             * Send file to FTP server
-                             */
-                            ftpClient.UploadFile(
-                                workingFile,
-                                Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/")
-                                );
-
-                            /*
-                             * and rename it
-                             */
-                            ftpClient.Rename(
-                                Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/"),
-                                schedEvent.XMLFileName
-                                );
-                            //ftp.RenameFile(
-                            //    schedEvent.XMLFileName,
-                            //    "ftp://" + schedEvent.FTPAddress + "/" + schedEvent.XMLFileName + ".part",
-                            //    schedEvent.FTPLogin,
-                            //    schedEvent.FTPPassword
+                            ///*
+                            // * and rename it
+                            // */
+                            //ftpClient.Rename(
+                            //    Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/"),
+                            //    schedEvent.XMLFileName
                             //    );
 
                             /*
@@ -386,18 +376,24 @@ namespace ITSharp.ScheDEX
                              */
                             this.todoEvents.Remove(schedEvent);
                         }
+#if DEBUG
                         catch (Exception ex)
+#else
+                        catch (Exception)
+#endif
                         {
-                            //TODO: .... LOG ???
-                            //Console.WriteLine("Error: " + e);
-                            //LOG("ERROR: " + ex.Message);
+#if DEBUG
+                            LOG("ERROR: " + ex.Message);
+#endif
 
                             /* 
                              * If we have more attempts then try again, so do not remove this event from working array
                              */
                             if (schedEvent.TryAgain)
                             {
-                                //LOG("Taking another attempt");
+#if DEBUG
+                                LOG("Taking another attempt");
+#endif
                             }
                             else
                             {
@@ -405,7 +401,10 @@ namespace ITSharp.ScheDEX
                                  * Clean up worker array with events
                                  */
                                 this.todoEvents.Remove(schedEvent);
-                                //LOG("Give up");
+
+#if DEBUG
+                                LOG("Give up");
+#endif
                             }
                         }
                         finally

@@ -232,9 +232,8 @@ namespace ITSharp.ScheDEX
                 {
                     SqlDR = SqlCom.ExecuteReader();
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    //this.sql.Connection.Close();
                     //MessageBox.Show(ex.Message);
                     MessageBox.Show("Wybrana baza danych nie pozwala na odczyt wymaganych danych", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Hand);
                     return;

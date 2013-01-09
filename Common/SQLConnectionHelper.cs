@@ -28,7 +28,19 @@ namespace ITSharp.ScheDEX.Common
         private ArrayList tables;
         private Dictionary<String, String> queries;
 
-        private string query_kartoteki = @"SELECT
+        public SQLConnectionHelper()
+        {
+            this.serverNames = new ArrayList();
+            this.defaultServerName = "";
+            this.sqlConnectionStr = new SQLConnectionString();
+            this.isConnected = false;
+            this.sqlConnection = null;
+            this.databases = new ArrayList();
+            this.tables = new ArrayList();
+
+            this.queries = new Dictionary<String, String>();
+            this.queries.Add("Kartoteki", 
+@"SELECT
 	[Magazyny].[mag_kod] AS [Magazyn],
 	[Oferta].[ofr_symbol] AS [Symbol],
 	[Oferta].[ofr_nazwa] AS [Nazwa],
@@ -85,11 +97,11 @@ LEFT JOIN -- Cena detaliczna
 	FROM [OfertaCeny]
 	WHERE [OfertaCeny].[ofc_rodzaj] = 1
 	) CENA_DETALICZNA
-	ON [Oferta].[ofr_id] = [CENA_DETALICZNA].[ofc_ofr];";
-//WHERE 
-//    [Magazyny].[mag_kod] = 'NAV';";
+	ON [Oferta].[ofr_id] = [CENA_DETALICZNA].[ofc_ofr];"
+                );
 
-        private string query_kontrahenci = @"SELECT
+            this.queries.Add("Dane kontrahentów", 
+@"SELECT
 	[Kontrahenci].[knt_id] AS [Id],
 	[Kontrahenci].[knt_kod] AS [Kod],
 	[Kontrahenci].[knt_nazwa] AS [Nazwa],
@@ -98,22 +110,76 @@ LEFT JOIN -- Cena detaliczna
 	[Kontrahenci].[knt_kredyt] AS [Limit kredytowy],
 	[Kontrahenci].[knt_konto_ma]-[Kontrahenci].[knt_konto_wn] AS [Aktualny stan konta]
 FROM 
-	[Kontrahenci];";
+	[Kontrahenci];"
+                );
 
+            this.queries.Add("Dane kontrahentów (+ kwota niezapłaconych faktur)",
+@"SELECT 
+		[Kontrahenci].[knt_id] AS [Id],
+		[Kontrahenci].[knt_kod] AS [Kod],
+		[Kontrahenci].[knt_nazwa] AS [Nazwa],
+		[Kontrahenci].[knt_nip] AS [NIP],
+		[Kontrahenci].[knt_email] AS [Email],
+		[Kontrahenci].[knt_kredyt] AS [Limit kredytowy],
+		[Kontrahenci].[knt_konto_ma]-[Kontrahenci].[knt_konto_wn] AS [Aktualny stan konta],
+		[DOK_SUM].[kwota pozostała do zapłaty] AS [Kwota pozostała do zapłaty]
+	FROM
+		[Kontrahenci]	
+	INNER JOIN
+		(SELECT
+			[Rozliczenia].[roz_knt] AS [roz_knt],
+			SUM(ISNULL([Rozliczenia].[roz_kwota_wn], 0)) 
+			-SUM(ISNULL([Rozliczenia].[roz_kwota_ma], 0)) AS [kwota pozostała do zapłaty]
+		FROM 
+			[Rozliczenia]
+		GROUP BY 
+			[Rozliczenia].[roz_knt]
+		)[DOK_SUM]
+		ON [DOK_SUM].[roz_knt] = [Kontrahenci].[knt_id];"
+                );
 
-        public SQLConnectionHelper()
-        {
-            this.serverNames = new ArrayList();
-            this.defaultServerName = "";
-            this.sqlConnectionStr = new SQLConnectionString();
-            this.isConnected = false;
-            this.sqlConnection = null;
-            this.databases = new ArrayList();
-            this.tables = new ArrayList();
-
-            this.queries = new Dictionary<String, String>();
-            this.queries.Add("Kartoteki", query_kartoteki);
-            this.queries.Add("Dane klientów", query_kontrahenci);
+            this.queries.Add("Niezapłacone faktury",
+@"SELECT 
+	[Kontrahenci].[knt_id] AS [Id klienta],
+	[Dokumenty].[dok_nr] AS [Numer faktury],
+	[DOK_SUM].[pełna kwota do zapłaty za fakturę] AS [Pełna kwota do zapłaty za fakturę],
+	[DOK_SUM].[kwota pozostała do zapłaty] AS [Kwota pozostała do zapłaty],
+	[Dokumenty].[dok_data_platnosci] AS [Termin platności]
+FROM
+	[Dokumenty]	
+INNER JOIN
+	(SELECT
+		[Rozliczenia].[roz_dok] AS [dokument id],
+		SUM(
+			case 
+				when [Rozliczenia].[roz_kwota_wn] is not null 
+				then [Rozliczenia].[roz_kwota_wn] 
+				else 0 
+			end) 
+			AS [pełna kwota do zapłaty za fakturę],
+		SUM(case 
+				when [Rozliczenia].[roz_kwota_wn] is not null 
+				then [Rozliczenia].[roz_kwota_wn] 
+				else 0 
+			end)
+		-SUM(
+			case 
+				when [Rozliczenia].[roz_kwota_ma] is not null 
+				then [Rozliczenia].[roz_kwota_ma] 
+				else 0 
+			end) 
+			AS [kwota pozostała do zapłaty]
+	FROM 
+		[Rozliczenia]
+	GROUP BY 
+		[Rozliczenia].[roz_dok]
+	)[DOK_SUM]
+	ON [DOK_SUM].[dokument id] = [Dokumenty].[dok_id]
+LEFT JOIN
+	[Kontrahenci] ON [Kontrahenci].[knt_id] = [Dokumenty].[dok_knt]
+WHERE
+	[DOK_SUM].[kwota pozostała do zapłaty] != 0"
+        );
         }
 
         public void StartScanServerNames()

@@ -202,7 +202,6 @@
             this.Name = "FormMain";
             this.Padding = new System.Windows.Forms.Padding(5);
             this.Text = "ScheDEX";
-            this.Load += new System.EventHandler(this.FormMain_Load);
             this.contextMenuStrip1.ResumeLayout(false);
             this.splitContainer.Panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();

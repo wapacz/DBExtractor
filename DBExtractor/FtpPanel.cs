@@ -6,12 +6,10 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using ITSharp.ScheDEX.Common;
-using ITSharp.ScheDEX.GUI;
-
-using ITSharp.Helpers.FTP;
 using System.Threading;
 using System.IO;
+using ITSharp.ScheDEX.Common;
+using ITSharp.ScheDEX.GUI;
 
 namespace ITSharp.ScheDEX
 {
@@ -63,17 +61,8 @@ namespace ITSharp.ScheDEX
             this.pbFTPConnectTest.Show();
             
             /*
-             * Initialize FTP helper
+             * Initialize FTP client
              */
-            //this.ftp = new FTPHelper(
-            //    Path.Combine("ftp://"+this.tbFTPAdress.Text, this.tbFTPRemotePath.Text).Replace("\\","/"),
-            //    this.tbFTPUserName.Text,
-            //    this.tbFTPUserPass.Text
-            //    );
-            //this.ftp.ConnectionEvent += new EventHandler<FTPConnectionEventArgs>(ftp_ConnectionEvent);
-
-            //MessageBox.Show(Path.Combine("ftp://" + this.tbFTPAdress.Text, this.tbFTPRemotePath.Text).Replace("\\", "/"));
-
             this.ftpClinet = new FTPClient(
                 "ftp://" + this.tbFTPAdress.Text,
                 this.tbFTPUserName.Text,
@@ -81,27 +70,7 @@ namespace ITSharp.ScheDEX
                 );
             this.ftpClinet.ConnectionEvent += new EventHandler<FTPConnectionEventArgs>(ftp_ConnectionEvent);
 
-
-
-
-
-            //container.ftp = this.ftp;
-            //this.ftp.Address = this.settings.FtpAddress;
-            //this.ftp.Login = this.settings.FtpUserName;
-            //this.ftp.Password = this.settings.FtpUserPassword;
-            
-
-            /*
-             * Copy date from forms and put them into FTP helper
-             */
-            //this.ftp.Address = this.tbFTPAdress.Text;
-            //this.ftp.Login = this.tbFTPUserName.Text;
-            //this.ftp.Password = this.tbFTPUserPass.Text;
-            //this.ftp.RemotePath = this.tbFTPRemotePath.Text;
-
-            //this.ftp.StartCheckConnection();
-
-
+            // start verifiying connection
             new Thread(new ThreadStart(() =>
             {
                 this.ftpClinet.VerifyConnection(this.tbFTPRemotePath.Text);
@@ -152,24 +121,6 @@ namespace ITSharp.ScheDEX
             });
 
             //this.ftp.Disconnect();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            this.ftpClinet = new FTPClient(
-                "ftp://" + this.tbFTPAdress.Text,
-                this.tbFTPUserName.Text,
-                this.tbFTPUserPass.Text
-                );
-            this.ftpClinet.ChangeWorkingDirectory(this.tbFTPRemotePath.Text);
-            
-            //this.ftpClinet.UploadFile("d:\\tmp\\test.txt", "test.txt");
-            //this.ftpClinet.Rename("test.txt", "test.txt.renamed");
-
-            this.ftpClinet.ChangeWorkingDirectory("..");
-            this.ftpClinet.ChangeWorkingDirectory("..");
-            foreach (String obFile in this.ftpClinet.ListDirectory())
-                Console.WriteLine(obFile);
         }
     }
 }
