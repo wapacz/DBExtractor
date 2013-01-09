@@ -35,37 +35,40 @@ namespace ITSharp.ScheDEX.Common
             string[] dirList;
             try
             {
-                if (path == "")
+                if (path != "")
                 {
-                    path = ".";
-                }
-
-                var separator = new char[] { '\\', '/' };
-                foreach (String directory in path.Split(separator))
-                {
-                    found = false;
-                    dirList = this.ListDirectory();
-                    foreach (string dir in dirList)
+                    var separator = new char[] { '\\', '/' };
+                    foreach (String directory in path.Split(separator))
                     {
-                        if (dir.Equals(directory))
+                        found = false;
+                        dirList = this.ListDirectory();
+                        foreach (string dir in dirList)
                         {
-                            found = true;
-                            //break;
+                            if (dir.Equals(directory))
+                            {
+                                found = true;
+                                //break;
+                            }
+                        }
+                        if (found)
+                        {
+                            this.ChangeWorkingDirectory(directory);
+                        }
+                        else
+                        {
+                            // dir not found
+                            if (ConnectionEvent != null)
+                                ConnectionEvent(this, FTPConnectionEventArgs.SuccessWithProblems);
+                            return;
                         }
                     }
-                    if (found)
-                    {
-                        this.ChangeWorkingDirectory(directory);
-                    }
-                    else
-                    {
-                        // dir not found
-                        if (ConnectionEvent != null)
-                            ConnectionEvent(this, FTPConnectionEventArgs.SuccessWithProblems);
-                        return;
-                    }
+                }
+                else
+                {
+                    this.ChangeWorkingDirectory(path);
                 }
 
+                this.PrintWorkingDirectory();
 
                 if (ConnectionEvent != null)
                     ConnectionEvent(this, FTPConnectionEventArgs.Success);

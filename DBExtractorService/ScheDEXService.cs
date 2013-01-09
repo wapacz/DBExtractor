@@ -355,22 +355,6 @@ namespace ITSharp.ScheDEX
                             ftpClient.UploadFile(workingFile, schedEvent.XMLFileName + ".part");
                             ftpClient.Rename(schedEvent.XMLFileName + ".part", schedEvent.XMLFileName);
 
-                            ///*
-                            // * Send file to FTP server
-                            // */
-                            //ftpClient.UploadFile(
-                            //    workingFile,
-                            //    Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/")
-                            //    );
-
-                            ///*
-                            // * and rename it
-                            // */
-                            //ftpClient.Rename(
-                            //    Path.Combine(schedEvent.FTPRemotePath, schedEvent.XMLFileName + ".part").Replace("\\", "/"),
-                            //    schedEvent.XMLFileName
-                            //    );
-
                             /*
                              * Clean up worker array with events
                              */

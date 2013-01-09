@@ -49,6 +49,14 @@ namespace ITSharp.ScheDEX
             if(this.tbFTPAdress.Text.StartsWith("ftp://"))
                 this.tbFTPAdress.Text = this.tbFTPAdress.Text.Substring(6);
 
+            if (   this.tbFTPRemotePath.Text.StartsWith(" ")
+                || this.tbFTPRemotePath.Text.StartsWith(".")
+                || this.tbFTPRemotePath.Text.StartsWith("/"))
+            {
+                MessageBox.Show("Ścieżna na serwerze FTP nie może zaczynać się od ' ', '.' ani od '/'", "Informacja", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
             /*
              * Lock controls
              */
