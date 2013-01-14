@@ -219,7 +219,7 @@ namespace ITSharp.ScheDEX
                              */
                             if (schedEvent.SQLQueryName == "Kartoteki")
                             {
-                                xmlWS.Encoding = new ASCIIEncoding(); //Encoding.UTF8;
+                                xmlWS.Encoding = Encoding.UTF8; //new ASCIIEncoding(); //
 
                                 using (XmlWriter writer = XmlWriter.Create(workingFile, xmlWS))
                                 {
@@ -263,7 +263,7 @@ namespace ITSharp.ScheDEX
                                         writer.WriteStartElement(PREFIX, "Cell", NS);
                                         writer.WriteStartElement(PREFIX, "Data", NS);
                                         writer.WriteAttributeString(PREFIX, "Type", NS, "String");
-                                        writer.WriteString(col.ColumnName);
+                                        writer.WriteElementContent(col.ColumnName);
                                         writer.WriteEndElement(); // Data
                                         writer.WriteEndElement(); // Cell
 
@@ -280,7 +280,7 @@ namespace ITSharp.ScheDEX
 
                                             writer.WriteStartElement(PREFIX, "Data", NS);
                                             writer.WriteAttributeString(PREFIX, "Type", NS, XMLHelper.ConvertType(Type.GetTypeCode(col.DataType)));
-                                            writer.WriteString(row[col].ToString());
+                                            writer.WriteElementContent(row[col].ToString());
                                             writer.WriteEndElement(); // Data
 
                                             writer.WriteEndElement(); // Cell

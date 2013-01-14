@@ -8,6 +8,30 @@ using System.Xml.Serialization;
 
 namespace ITSharp.ScheDEX.Common
 {
+    public static class XMLHelperStatic
+    {
+        public static void WriteElementContent(this XmlWriter writer, string content)
+        {
+            if (String.IsNullOrEmpty(content))
+            {
+                return;
+            }
+
+            // WriteString will happily escape any XML markup characters. However, 
+            // for legibility we write content that contains certain special
+            // characters as CDATA 
+            const string SpecialChars = @"<>&";
+            if (content.IndexOfAny(SpecialChars.ToCharArray()) != -1)
+            {
+                writer.WriteCData(content);
+            }
+            else
+            {
+                writer.WriteString(content);
+            }
+        }
+    }
+
     public class XMLHelper
     {
         public static string ConvertType(TypeCode typeCode)
@@ -50,7 +74,7 @@ namespace ITSharp.ScheDEX.Common
 
         private string[] ar_columnWidth = { "80", "80", "50", "100", "150", "50", "50", "150", "100", "50", "50", "50", "50", "100", "80", "50", "50" };
         private string[] ar_header = { "Magazyn", "Symbol", "Nazwa", "Stan magazynowy", "Ilość do dyspozycji", "Jm", "Cena", "Ostatnia cena zakupu", "Cena minimalna", "Vat", "Waga", "PKWiU", "SWW", "Lokalizacja", "Producent", "Grupa", "Kod" };
-        private string[] ar_dataType = {"String", "String", "String", "Number", "Number", "String", "Number", "Number", "Number", "Number", "Number", "String", "String", "String", "String", "String", "String" };
+        private string[] ar_dataType = { "String", "String", "String", "Number", "Number", "String", "Number", "Number", "Number", "Number", "Number", "String", "String", "String", "String", "String", "String" };
         private string[][] ar_data = new string[][] {
             new string[] {"NAV", "00032010", "CH-2094 - Scooby Doo Gra Nawiedzony Zamek", "0", "0", "SZT", "106.48", "58.56", "0", "23", "0", "", "", "", "Toy Time", "grupa główna", "5029736020941"},
             new string[] {"NAV", "00037044", "GEO-591 - Geomag tylko panele 60 el.", "0", "0", "SZT", "41.06", "16.07", "0", "23", "0", "", "", "", "Toy Time", "grupa główna", "871772005919"},
@@ -83,64 +107,64 @@ namespace ITSharp.ScheDEX.Common
             {
                 writer.WriteStartDocument();
                 writer.WriteStartElement(PREFIX, "Workbook", NS);
-                
-                    writer.WriteStartElement(PREFIX, "Styles", NS);
-                        writer.WriteStartElement(PREFIX, "Style", NS);
-                        writer.WriteAttributeString(PREFIX, "ID", NS, "1");
-                            writer.WriteStartElement(PREFIX, "Font", NS);
-                            writer.WriteAttributeString(PREFIX, "Bold", NS, "1");
-                            writer.WriteEndElement(); //Font
-                        writer.WriteEndElement(); //Style
-                    writer.WriteEndElement(); //Styles
-                
-                    writer.WriteStartElement(PREFIX, "Worksheet", NS);
-                    writer.WriteAttributeString(PREFIX, "Name", NS, "Arkusz");
-                        writer.WriteStartElement(PREFIX, "Table", NS);
 
-                            foreach (string columnWidth in ar_columnWidth)
-                            {
-                                writer.WriteStartElement(PREFIX, "Column", NS);
-                                writer.WriteAttributeString(PREFIX, "Width", NS, columnWidth);
-                                writer.WriteEndElement(); // Column
-                            }
+                writer.WriteStartElement(PREFIX, "Styles", NS);
+                writer.WriteStartElement(PREFIX, "Style", NS);
+                writer.WriteAttributeString(PREFIX, "ID", NS, "1");
+                writer.WriteStartElement(PREFIX, "Font", NS);
+                writer.WriteAttributeString(PREFIX, "Bold", NS, "1");
+                writer.WriteEndElement(); //Font
+                writer.WriteEndElement(); //Style
+                writer.WriteEndElement(); //Styles
 
-                            writer.WriteStartElement(PREFIX, "Row", NS);
-                            writer.WriteAttributeString(PREFIX, "StyleID", NS, "1");
-                            
-                            foreach (string header in ar_header)
-                            {
-                                writer.WriteStartElement(PREFIX, "Cell", NS);
-                                writer.WriteStartElement(PREFIX, "Data", NS);
-                                writer.WriteAttributeString(PREFIX, "Type", NS, "String");
-                                writer.WriteString(header);
-                                writer.WriteEndElement(); // Data
-                                writer.WriteEndElement(); // Cell
+                writer.WriteStartElement(PREFIX, "Worksheet", NS);
+                writer.WriteAttributeString(PREFIX, "Name", NS, "Arkusz");
+                writer.WriteStartElement(PREFIX, "Table", NS);
 
-                            }
-                            writer.WriteEndElement(); // Row
-                            
-                            foreach (string[] row in ar_data)
-                            {
-                                writer.WriteStartElement(PREFIX, "Row", NS);
+                foreach (string columnWidth in ar_columnWidth)
+                {
+                    writer.WriteStartElement(PREFIX, "Column", NS);
+                    writer.WriteAttributeString(PREFIX, "Width", NS, columnWidth);
+                    writer.WriteEndElement(); // Column
+                }
 
-                                for (int i = 0; i < ar_dataType.Length; i++)
-                                {
-                                    writer.WriteStartElement(PREFIX, "Cell", NS);
+                writer.WriteStartElement(PREFIX, "Row", NS);
+                writer.WriteAttributeString(PREFIX, "StyleID", NS, "1");
 
-                                    writer.WriteStartElement(PREFIX, "Data", NS);
-                                    writer.WriteAttributeString(PREFIX, "Type", NS, ar_dataType[i]);
-                                    writer.WriteString(row[i]);
-                                    writer.WriteEndElement(); // Data
+                foreach (string header in ar_header)
+                {
+                    writer.WriteStartElement(PREFIX, "Cell", NS);
+                    writer.WriteStartElement(PREFIX, "Data", NS);
+                    writer.WriteAttributeString(PREFIX, "Type", NS, "String");
+                    writer.WriteString(header);
+                    writer.WriteEndElement(); // Data
+                    writer.WriteEndElement(); // Cell
 
-                                    writer.WriteEndElement(); // Cell
-                                }
+                }
+                writer.WriteEndElement(); // Row
 
-                                writer.WriteEndElement(); // Row
-                            }
-                
-                        writer.WriteEndElement(); // Table
-                    writer.WriteEndElement(); // Worksheet
-                
+                foreach (string[] row in ar_data)
+                {
+                    writer.WriteStartElement(PREFIX, "Row", NS);
+
+                    for (int i = 0; i < ar_dataType.Length; i++)
+                    {
+                        writer.WriteStartElement(PREFIX, "Cell", NS);
+
+                        writer.WriteStartElement(PREFIX, "Data", NS);
+                        writer.WriteAttributeString(PREFIX, "Type", NS, ar_dataType[i]);
+                        writer.WriteString(row[i]);
+                        writer.WriteEndElement(); // Data
+
+                        writer.WriteEndElement(); // Cell
+                    }
+
+                    writer.WriteEndElement(); // Row
+                }
+
+                writer.WriteEndElement(); // Table
+                writer.WriteEndElement(); // Worksheet
+
                 writer.WriteEndElement();
                 writer.WriteEndDocument();
             }
@@ -316,7 +340,7 @@ namespace ITSharp.ScheDEX.Common
                 {
                     writer.WriteStartElement(PREFIX, "Cell", NS);
                     writer.WriteAttributeString(PREFIX, "Type", NS, "String");
-                    writer.WriteString(header); 
+                    writer.WriteString(header);
                     writer.WriteEndElement(); // Cell
 
                 }

@@ -62,6 +62,16 @@ namespace ITSharp.ScheDEX.Common
                     return service;
                 }
 
+            // service not found
+            ServiceStatusEventArgs args = new ServiceStatusEventArgs();
+            if (ServiceStatusChangedEvent != null)
+            {
+                args.Status = ServiceControllerStatus.Stopped;
+                args.IsWorking = false;
+                ServiceStatusChangedEvent(this.service, args);
+            }
+            //this.previousStatus = this.service.Status;
+
             throw new ServiceNotFoundException();
         }
 
