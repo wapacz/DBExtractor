@@ -217,7 +217,8 @@ namespace ITSharp.ScheDEX
                             /*
                              * Start creating XML file
                              */
-                            if (schedEvent.SQLQueryName == "Kartoteki")
+                            if (schedEvent.SQLQueryName == "Kartoteki"
+                             || schedEvent.SQLQueryName == "Kartoteki (tylko magazyn NAV)")
                             {
                                 xmlWS.Encoding = Encoding.UTF8; //new ASCIIEncoding(); //
 
@@ -318,7 +319,7 @@ namespace ITSharp.ScheDEX
                                     {
                                         writer.WriteStartElement(PREFIX, "Cell", NS);
                                         writer.WriteAttributeString(PREFIX, "DataType", NS, XMLHelper.ConvertType(Type.GetTypeCode(col.DataType)));
-                                        writer.WriteString(col.ColumnName);
+                                        writer.WriteElementContent(col.ColumnName);
                                         writer.WriteEndElement(); // Cell
                                     }
                                     writer.WriteEndElement(); // Header
@@ -333,7 +334,7 @@ namespace ITSharp.ScheDEX
                                         foreach (DataColumn col in dataTable.Columns)
                                         {
                                             writer.WriteStartElement(PREFIX, "Cell", NS);
-                                            writer.WriteString(row[col].ToString());
+                                            writer.WriteElementContent(row[col].ToString());
                                             writer.WriteEndElement(); // Data
                                         }
 
