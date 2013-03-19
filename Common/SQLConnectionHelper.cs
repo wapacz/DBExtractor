@@ -39,7 +39,7 @@ namespace ITSharp.ScheDEX.Common
             this.tables = new ArrayList();
 
             this.queries = new Dictionary<String, String>();
-            this.queries.Add("Kartoteki", 
+            this.queries.Add("Kartoteki",
 @"SELECT
 	[Magazyny].[mag_kod] AS [Magazyn],
 	[Oferta].[ofr_symbol] AS [Symbol],
@@ -97,7 +97,8 @@ LEFT JOIN -- Cena detaliczna
 	FROM [OfertaCeny]
 	WHERE [OfertaCeny].[ofc_rodzaj] = 1
 	) CENA_DETALICZNA
-	ON [Oferta].[ofr_id] = [CENA_DETALICZNA].[ofc_ofr];"
+	ON [Oferta].[ofr_id] = [CENA_DETALICZNA].[ofc_ofr] 
+WHERE [Oferta].[ofr_is_arch] = 0;"
                 );
 
             this.queries.Add("Kartoteki (tylko magazyn NAV)",
@@ -159,7 +160,8 @@ LEFT JOIN -- Cena detaliczna
 	WHERE [OfertaCeny].[ofc_rodzaj] = 1
 	) CENA_DETALICZNA
 	ON [Oferta].[ofr_id] = [CENA_DETALICZNA].[ofc_ofr]
-WHERE [Magazyny].[mag_kod] = 'NAV';"
+WHERE [Magazyny].[mag_kod] = 'NAV' 
+  AND [Oferta].[ofr_is_arch] = 0;"
                 );
 
             this.queries.Add("Dane kontrahentów", 
@@ -206,7 +208,8 @@ LEFT JOIN
 	[Dokumenty].[dok_nr] AS [Numer faktury],
 	[DOK_SUM].[pełna kwota do zapłaty za fakturę] AS [Pełna kwota do zapłaty za fakturę],
 	[DOK_SUM].[kwota pozostała do zapłaty] AS [Kwota pozostała do zapłaty],
-	[Dokumenty].[dok_data_platnosci] AS [Termin platności]
+	[Dokumenty].[dok_data_platnosci] AS [Termin platności],
+	[Dokumenty].[dok_data_wyst] AS [Data wystawienia dokumentu]
 FROM
 	[Dokumenty]	
 INNER JOIN
